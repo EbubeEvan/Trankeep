@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { generatePagination } from '@/app/lib/utils';
 
-export default function Pagination({ totalPages }: { totalPages: number }) {
+ const Pagination = ({ totalPages }: { totalPages: number })=> {
   // NOTE: comment in this code when you get to this point in the course
 
   // const allPages = generatePagination(currentPage, totalPages);
@@ -117,3 +117,5 @@ function PaginationArrow({
     </Link>
   );
 }
+
+export default Pagination;

@@ -16,7 +16,7 @@ const links = [
   { name: 'Customers', href: '/dashboard/customers', icon: UserGroupIcon },
 ];
 
-export default function NavLinks() {
+ const NavLinks = () => {
   return (
     <>
       {links.map((link) => {
@@ -35,3 +35,5 @@ export default function NavLinks() {
     </>
   );
 }
+
+export default NavLinks

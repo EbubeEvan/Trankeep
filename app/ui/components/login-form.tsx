@@ -7,7 +7,7 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 
-export default function LoginForm() {
+ const LoginForm = () => {
   return (
     <form className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
@@ -71,3 +71,5 @@ function LoginButton() {
     </Button>
   );
 }
+
+export default LoginForm
