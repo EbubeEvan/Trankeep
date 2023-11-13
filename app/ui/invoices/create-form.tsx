@@ -8,7 +8,7 @@ import {
   CurrencyDollarIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
-import { Button } from '@/app/ui/components/button';
+import { Button } from '@app/ui/button';
 
  const Form = ({ customers }: { customers: CustomerField[] }) => {
   return (
