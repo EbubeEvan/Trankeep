@@ -1,21 +1,23 @@
-'use server';
+"use server";
 
-import { z } from 'zod';
-import { sql } from '@vercel/postgres';
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
-import { signIn } from '@/auth';
+import { z } from "zod";
+import { sql } from "@vercel/postgres";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { signIn } from "@/auth";
+import bcrypt from "bcrypt";
+import { uuidv7 } from "@kripod/uuidv7";
 
 const FormSchema = z.object({
   id: z.string(),
   customerId: z.string({
-    invalid_type_error: 'Please select a customer.',
+    invalid_type_error: "Please select a customer.",
   }),
   amount: z.coerce
     .number()
-    .gt(0, { message: 'Please enter an amount greater than $0.' }),
-  status: z.enum(['pending', 'paid'], {
-    invalid_type_error: 'Please select an invoice status.',
+    .gt(0, { message: "Please enter an amount greater than $0." }),
+  status: z.enum(["pending", "paid"], {
+    invalid_type_error: "Please select an invoice status.",
   }),
   date: z.string(),
 });
@@ -34,26 +36,28 @@ export type State = {
 };
 
 // create invoice
-export const createInvoice = async(prevState: State, formData: FormData) => {
+export const createInvoice = async (prevState: State, formData: FormData) => {
   // Validate form fields using Zod
   const validatedFields = CreateInvoice.safeParse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status'),
+    customerId: formData.get("customerId"),
+    amount: formData.get("amount"),
+    status: formData.get("status"),
   });
+
+  console.log(validatedFields);
 
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Create Invoice.',
+      message: "Missing Fields. Failed to Create Invoice.",
     };
   }
 
   // Prepare data for insertion into the database
   const { customerId, amount, status } = validatedFields.data;
   const amountInCents = amount * 100;
-  const date = new Date().toISOString().split('T')[0];
+  const date = new Date().toISOString().split("T")[0];
 
   // Insert data into the database
   try {
@@ -64,31 +68,31 @@ export const createInvoice = async(prevState: State, formData: FormData) => {
   } catch (error) {
     // If a database error occurs, return a more specific error.
     return {
-      message: 'Database Error: Failed to Create Invoice.',
+      message: "Database Error: Failed to Create Invoice.",
     };
   }
 
   // Revalidate the cache for the invoices page and redirect the user.
-  revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
-}
+  revalidatePath("/dashboard/invoices");
+  redirect("/dashboard/invoices");
+};
 
 // update invoice
-export const updateInvoice = async(
+export const updateInvoice = async (
   id: string,
   prevState: State,
-  formData: FormData,
+  formData: FormData
 ) => {
   const validatedFields = UpdateInvoice.safeParse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status'),
+    customerId: formData.get("customerId"),
+    amount: formData.get("amount"),
+    status: formData.get("status"),
   });
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Update Invoice.',
+      message: "Missing Fields. Failed to Update Invoice.",
     };
   }
 
@@ -102,37 +106,77 @@ export const updateInvoice = async(
       WHERE id = ${id}
     `;
   } catch (error) {
-    return { message: 'Database Error: Failed to Update Invoice.' };
+    return { message: "Database Error: Failed to Update Invoice." };
   }
 
-  revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
-}
+  revalidatePath("/dashboard/invoices");
+  redirect("/dashboard/invoices");
+};
 
 //delete invoice
-export const deleteInvoice = async(id: string) => {
+export const deleteInvoice = async (id: string) => {
   // throw new Error('Failed to Delete Invoice');
 
   try {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
-    revalidatePath('/dashboard/invoices');
-    return { message: 'Deleted Invoice' };
+    revalidatePath("/dashboard/invoices");
+    return { message: "Deleted Invoice" };
   } catch (error) {
-    return { message: 'Database Error: Failed to Delete Invoice.' };
+    return { message: "Database Error: Failed to Delete Invoice." };
   }
-}
+};
 
-//sign in
-export const authenticate = async(
+//register new user
+export const register = async (
   prevState: string | undefined,
-  formData: FormData,
+  formData: FormData
 ) => {
+  const validatedFields = z
+    .object({
+      name: z.string(),
+      email: z.string().email(),
+      password: z.string().min(6),
+    })
+    .safeParse(Object.fromEntries(formData.entries()));
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to register.",
+    };
+  }
+
+  const { name, email, password } = validatedFields.data;
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
   try {
-    await signIn('credentials', Object.fromEntries(formData));
+    const userId = uuidv7(); // Generate UUID for the user ID
+    await sql`
+      INSERT INTO users (id, name, email, password)
+      VALUES (${userId}, ${name}, ${email}, ${hashedPassword})`;
   } catch (error) {
-    if ((error as Error).message.includes('CredentialsSignin')) {
-      return 'CredentialsSignin';
+    console.log(`error is: ${(error as Error).message}`);
+    if ((error as Error).message.includes("db error")) {
+      return "db error";
     }
     throw error;
   }
-}
+
+  redirect("/login");
+};
+
+//sign in
+export const authenticate = async (
+  prevState: string | undefined,
+  formData: FormData
+) => {
+  try {
+    await signIn("credentials", Object.fromEntries(formData.entries()));
+  } catch (error) {
+    if ((error as Error).message.includes("CredentialsSignin")) {
+      return "CredentialsSignin";
+    }
+    throw error;
+  }
+};
