@@ -12,7 +12,8 @@ import { Button } from '@/app/ui/button';
 import { updateInvoice } from '@/app/lib/actions';
 import { useFormState } from 'react-dom';
 
- const EditInvoiceForm = ({
+ const 
+ EditInvoiceForm = ({
   invoice,
   customers,
 }: {

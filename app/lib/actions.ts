@@ -7,6 +7,8 @@ import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
 import bcrypt from "bcrypt";
 import { uuidv7 } from "@kripod/uuidv7";
+import fs from "fs";
+import path from "path";
 
 const FormSchema = z.object({
   id: z.string(),
@@ -124,6 +126,61 @@ export const deleteInvoice = async (id: string) => {
   } catch (error) {
     return { message: "Database Error: Failed to Delete Invoice." };
   }
+};
+
+//Add customer
+export const addCustomer = async (
+  image_url: string,
+  prevState: string | undefined,
+  formData: FormData
+) => {
+  const validatedFields = z
+    .object({
+      name: z.string(),
+      email: z.string().email(),
+    })
+    .safeParse(Object.fromEntries(formData.entries()));
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to register.",
+    };
+  }
+
+  const { name, email } = validatedFields.data;
+
+  const id = uuidv7();
+
+  const dataUrlParts = image_url.split(";base64,");
+  const imageBuffer = Buffer.from(dataUrlParts[1], "base64");
+
+  const uploadFolderPath = path.join(process.cwd(), "customers-photos");
+  const fileName = `${id}_${Date.now()}_image.png`;
+  const filePath = path.join(uploadFolderPath, fileName);
+
+  // Save the file to the upload folder
+  fs.writeFileSync(filePath, imageBuffer);
+
+  if (image_url === "") {
+    image_url = "/customers-photos/profile.png";
+  } else {
+    image_url = `/customers-photos/${filePath}`;
+  }
+
+  console.log(image_url)
+
+  try {
+    await sql`
+      INSERT INTO customers (id, name, email, image_url)
+      VALUES (${id}, ${name}, ${email}, ${image_url})`;
+  } catch (error) {
+    return {
+      message: "Database Error: Failed to Add Customer.",
+    };
+  }
+  revalidatePath("/dashboard/customers");
+  redirect("/dashboard/customers");
 };
 
 //register new user
