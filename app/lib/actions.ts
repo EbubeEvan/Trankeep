@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
 import bcrypt from "bcrypt";
-import { uuidv7 } from "@kripod/uuidv7";
+import { v4 as uuidv4 } from 'uuid';
 import fs from "fs";
 import path from "path";
 
@@ -150,22 +150,24 @@ export const addCustomer = async (
 
   const { name, email } = validatedFields.data;
 
-  const id = uuidv7();
+  const id = uuidv4();
 
-  const dataUrlParts = image_url.split(";base64,");
-  const imageBuffer = Buffer.from(dataUrlParts[1], "base64");
+  let savedImageUrl = "/customers-photos/profile.png"; // Default URL
 
-  const uploadFolderPath = path.join(process.cwd(), "customers-photos");
-  const fileName = `${id}_${Date.now()}_image.png`;
-  const filePath = path.join(uploadFolderPath, fileName);
+  if (image_url) {
+    const dataUrlParts = image_url.split(";base64,");
+    if (dataUrlParts.length === 2) {
+      const imageBuffer = Buffer.from(dataUrlParts[1], "base64");
 
-  // Save the file to the upload folder
-  fs.writeFileSync(filePath, imageBuffer);
+      const uploadFolderPath = path.join(process.cwd(), "/public/customers-photos");
+      const fileName = `${id}_${Date.now()}_image.png`;
+      const filePath = path.join(uploadFolderPath, fileName);
 
-  if (image_url === "") {
-    image_url = "/customers-photos/profile.png";
-  } else {
-    image_url = `/customers-photos/${filePath}`;
+      // Save the file to the upload folder
+      fs.writeFileSync(filePath, imageBuffer);
+
+      savedImageUrl = `/customers-photos/${fileName}`;
+    }
   }
 
   console.log(image_url)
@@ -173,7 +175,7 @@ export const addCustomer = async (
   try {
     await sql`
       INSERT INTO customers (id, name, email, image_url)
-      VALUES (${id}, ${name}, ${email}, ${image_url})`;
+      VALUES (${id}, ${name}, ${email}, ${savedImageUrl})`;
   } catch (error) {
     return {
       message: "Database Error: Failed to Add Customer.",
@@ -208,7 +210,7 @@ export const register = async (
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const userId = uuidv7(); // Generate UUID for the user ID
+    const userId = uuidv4(); // Generate UUID for the user ID
     await sql`
       INSERT INTO users (id, name, email, password)
       VALUES (${userId}, ${name}, ${email}, ${hashedPassword})`;

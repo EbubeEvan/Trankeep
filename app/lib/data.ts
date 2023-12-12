@@ -144,7 +144,7 @@ export async function fetchInvoicesPages(query: string) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch total number of invoices.");
   }
-}
+} 
 export async function fetchCustomersPages(query: string) {
   try {
     const count = await sql`SELECT COUNT(*)

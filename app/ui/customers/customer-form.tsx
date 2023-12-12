@@ -24,9 +24,6 @@ const CustomerForm = () => {
       };
       reader.readAsDataURL(file);
     }
-
-    console.log(imageSrc);
-    
   };
   
   const initialState = { message: null, errors: {} };
