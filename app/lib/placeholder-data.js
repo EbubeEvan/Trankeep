@@ -9,6 +9,69 @@ const users = [
   },
 ];
 
+const products = [
+  {
+    id: '45bcc7d9-6016-4c6e-bc0e-6decba215fc9',
+    name: 'Doxycap 100mg',
+    price: 4064,
+  },
+  {
+    id: '929c5032-bc5f-4f75-b673-58eec61b37b3',
+    name: 'Flovid 200mg',
+    price: 1232,
+  },
+  {
+    id: '99fcbec5-34ab-4adf-8b7b-5126aeb0f6a8',
+    name: 'Hovimax 250mg',
+    price: 1386,
+  },
+  {
+    id: '545680bb-be5c-4863-af8c-27e424e8cb16',
+    name: 'Coloseal',
+    price: 2359,
+  },
+  {
+    id: 'd3bd3ca0-a01d-40a7-b9bc-a223ec14d326',
+    name: 'Omezole 20mg',
+    price: 3124,
+  },
+  {
+    id: 'f34241d0-3f77-4f6f-91ab-7f4d26c89188',
+    name: 'Famotab 40mg',
+    price: 9950,
+  },
+  {
+    id: '95f413f9-c863-4e84-ba63-ba599b1d046c',
+    name: 'Diabetmin 500',
+    price: 2904,
+  },
+  {
+    id: '7b8d4e22-7a30-4e3a-adc8-a83ba8f75a5f',
+    name: 'Clamide',
+    price: 3421,
+  },
+  {
+    id: '6539e8a2-eb18-46a5-abaa-5e7a6e5ae947',
+    name: 'MET-GLIM',
+    price: 48125,
+  },
+  {
+    id: 'd37d1aba-5c61-4352-a37b-20d77088f200',
+    name: 'Hobetic',
+    price: 6968,
+  },
+  {
+    id: 'fffee206-609d-4d18-ad90-aeaf6e1741e9',
+    name: 'Clofenac SR',
+    price: 5230,
+  },
+  {
+    id: 'ffe3dd4e-b9ff-4baf-b0de-07116e890389',
+    name: 'Clofenac 50',
+    price: 2062,
+  }
+]
+
 const customers = [
   {
     id: '3958dc9e-712f-4377-85e9-fec4b6a6442a',
@@ -185,4 +248,5 @@ module.exports = {
   customers,
   invoices,
   revenue,
+  products,
 };

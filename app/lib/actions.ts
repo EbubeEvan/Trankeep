@@ -150,29 +150,28 @@ export const addCustomer = async (
 
   const { name, email } = validatedFields.data;
 
-  const id = uuidv4();
+  let savedImageUrl = "/customers/profile.png"; // Default URL
 
-  let savedImageUrl = "/customers-photos/profile.png"; // Default URL
-
+  // Add image to customers folder
   if (image_url) {
     const dataUrlParts = image_url.split(";base64,");
     if (dataUrlParts.length === 2) {
       const imageBuffer = Buffer.from(dataUrlParts[1], "base64");
 
-      const uploadFolderPath = path.join(process.cwd(), "/public/customers-photos");
-      const fileName = `${id}_${Date.now()}_image.png`;
+      const uploadFolderPath = path.join(process.cwd(), "/public/customers");
+      const customerName = name.split(" ")
+      const fileName = `${customerName[0]}-${customerName[1]}.png`;
       const filePath = path.join(uploadFolderPath, fileName);
 
-      // Save the file to the upload folder
+  // Save the file to customers folder
       fs.writeFileSync(filePath, imageBuffer);
 
-      savedImageUrl = `/customers-photos/${fileName}`;
+      savedImageUrl = `/customers/${fileName}`;
     }
   }
 
-  console.log(image_url)
-
   try {
+    const id = uuidv4();
     await sql`
       INSERT INTO customers (id, name, email, image_url)
       VALUES (${id}, ${name}, ${email}, ${savedImageUrl})`;
