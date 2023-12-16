@@ -7,6 +7,7 @@ import {
   LatestInvoiceRaw,
   User,
   Revenue,
+  Product
 } from "./definitions";
 import { formatCurrency } from "./utils";
 
@@ -145,6 +146,7 @@ export async function fetchInvoicesPages(query: string) {
     throw new Error("Failed to fetch total number of invoices.");
   }
 } 
+
 export async function fetchCustomersPages(query: string) {
   try {
     const count = await sql`SELECT COUNT(*)
@@ -159,6 +161,23 @@ export async function fetchCustomersPages(query: string) {
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch total number of invoices.");
+  }
+}
+
+export async function fetchProductsPages(query: string) {
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM products
+    WHERE
+      products.name ILIKE ${`%${query}%`} OR
+      products.price ILIKE ${`%${query}%`} 
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch total number of products.");
   }
 }
 
@@ -238,6 +257,16 @@ export async function fetchFilteredCustomers(
   } catch (err) {
     console.error("Database Error:", err);
     throw new Error("Failed to fetch customer table.");
+  }
+}
+
+export async function fetchProducts() {
+  try {
+    const data = await sql<Product>`SELECT * FROM products`;
+    return data.rows;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch products.");
   }
 }
 
