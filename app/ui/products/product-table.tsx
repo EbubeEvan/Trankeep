@@ -1,9 +1,15 @@
-import { fetchProducts } from '@app/lib/data';
+import { fetchFilteredProducts } from '@app/lib/data';
 import { DeleteProduct } from '../invoices/buttons';
 import { formatCurrency } from '@app/lib/utils';
 
-const ProductTable = async () => {
-    const products = await fetchProducts()
+const ProductTable = async ({
+    query,
+    currentPage,
+  }: {
+    query: string;
+    currentPage: number;
+  }) => {
+    const products = await fetchFilteredProducts(query, currentPage)
 
   return (
     <table className='mt-10 min-w-full text-gray-900'>

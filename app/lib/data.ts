@@ -91,6 +91,7 @@ export async function fetchCardData() {
 }
 
 const ITEMS_PER_PAGE = 6;
+
 export async function fetchFilteredInvoices(
   query: string,
   currentPage: number
@@ -147,40 +148,6 @@ export async function fetchInvoicesPages(query: string) {
   }
 } 
 
-export async function fetchCustomersPages(query: string) {
-  try {
-    const count = await sql`SELECT COUNT(*)
-    FROM customers
-    WHERE
-      customers.name ILIKE ${`%${query}%`} OR
-      customers.email ILIKE ${`%${query}%`} 
-  `;
-
-    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
-    return totalPages;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch total number of invoices.");
-  }
-}
-
-export async function fetchProductsPages(query: string) {
-  try {
-    const count = await sql`SELECT COUNT(*)
-    FROM products
-    WHERE
-      products.name ILIKE ${`%${query}%`} OR
-      products.price ILIKE ${`%${query}%`} 
-  `;
-
-    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
-    return totalPages;
-  } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch total number of products.");
-  }
-}
-
 export async function fetchInvoiceById(id: string) {
   try {
     const data = await sql<InvoiceForm>`
@@ -201,6 +168,50 @@ export async function fetchInvoiceById(id: string) {
     return invoice[0];
   } catch (error) {
     console.error("Database Error:", error);
+  }
+}
+
+export async function fetchFilteredProducts(
+  query: string,
+  currentPage: number
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const products = await sql<Product>`
+    SELECT
+    products.id,
+    products.name,
+    products.price
+  FROM products
+  WHERE
+    products.name ILIKE ${`%${query}%`}
+  ORDER BY products.name ASC
+  LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+`;
+    
+    return products.rows;
+    
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch products.");
+  }
+}
+
+export async function fetchProductsPages(query: string) {
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM products
+    WHERE
+      products.name ILIKE ${`%${query}%`}
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+    
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch total number of products.");
   }
 }
 
@@ -260,13 +271,20 @@ export async function fetchFilteredCustomers(
   }
 }
 
-export async function fetchProducts() {
+export async function fetchCustomersPages(query: string) {
   try {
-    const data = await sql<Product>`SELECT * FROM products`;
-    return data.rows;
+    const count = await sql`SELECT COUNT(*)
+    FROM customers
+    WHERE
+      customers.name ILIKE ${`%${query}%`} OR
+      customers.email ILIKE ${`%${query}%`} 
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
   } catch (error) {
     console.error("Database Error:", error);
-    throw new Error("Failed to fetch products.");
+    throw new Error("Failed to fetch total number of invoices.");
   }
 }
 
