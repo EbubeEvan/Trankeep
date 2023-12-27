@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
 import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
 
@@ -159,11 +159,11 @@ export const addCustomer = async (
       const imageBuffer = Buffer.from(dataUrlParts[1], "base64");
 
       const uploadFolderPath = path.join(process.cwd(), "/public/customers");
-      const customerName = name.split(" ")
+      const customerName = name.split(" ");
       const fileName = `${customerName[0]}-${customerName[1]}.png`;
       const filePath = path.join(uploadFolderPath, fileName);
 
-  // Save the file to customers folder
+      // Save the file to customers folder
       fs.writeFileSync(filePath, imageBuffer);
 
       savedImageUrl = `/customers/${fileName}`;
@@ -182,6 +182,58 @@ export const addCustomer = async (
   }
   revalidatePath("/dashboard/customers");
   redirect("/dashboard/customers");
+};
+
+// Add Product
+export const addProduct = async (
+  prevState: string | undefined,
+  formData: FormData
+) => {
+  const validatedFields = z
+    .object({
+      name: z.string({
+        invalid_type_error: "Please input product name.",
+      }),
+      price: z.coerce
+        .number()
+        .gt(0, { message: "Please enter an amount greater than $0." }),
+    })
+    .safeParse(Object.fromEntries(formData.entries()));
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to add product.",
+    };
+  }
+
+  const { name, price } = validatedFields.data;
+  const priceInCents = price * 100;
+
+  try {
+    const id = uuidv4();
+    await sql`
+      INSERT INTO products (id, name, price)
+      VALUES (${id}, ${name}, ${priceInCents})`;
+  } catch (error) {
+    return {
+      message: "Database Error: Failed to add product.",
+    };
+  }
+  revalidatePath('/dashboard/products');
+};
+
+// Delete Product
+export const deleteProduct = async (id: string) => {
+
+  try {
+    await sql`DELETE FROM products WHERE id = ${id}`;
+    revalidatePath('/dashboard/products');
+    console.log('deleted');
+    return { message: "Deleted Product" };
+  } catch (error) {
+    return { message: "Database Error: Failed to Delete Product." };
+  }
 };
 
 //register new user

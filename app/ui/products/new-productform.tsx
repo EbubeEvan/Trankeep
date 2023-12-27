@@ -1,11 +1,16 @@
 "use client";
 
 import { PlusIcon, CurrencyDollarIcon } from "@heroicons/react/24/outline";
+import { addProduct } from "@app/lib/actions";
+import { useFormState } from "react-dom";
 
 const NewProductForm = () => {
+  const initialState = { message: null, errors: {} };
+  const [state, dispatch] = useFormState(addProduct, initialState);
+
   return (
     <div className="my-[2rem] pl-3">
-      <form action="">
+      <form action={dispatch}>
         <div className="flex gap-x-[5rem] gap-y-[2rem] flex-col lg:flex-row">
           <div className="flex flex-col lg:flex-row">
             <label htmlFor="name" className="lg:mr-5">

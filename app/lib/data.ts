@@ -171,6 +171,26 @@ export async function fetchInvoiceById(id: string) {
   }
 }
 
+export async function fetchProducts() {
+  try {
+    const data = await sql<Product>`
+      SELECT
+        id,
+        name,
+        price
+      FROM products
+      ORDER BY name ASC
+    `;
+
+    const products = data.rows;
+    return products;
+  } catch (err) {
+    console.error("Database Error:", err);
+    throw new Error("Failed to fetch all products.");
+  }
+}
+
+
 export async function fetchFilteredProducts(
   query: string,
   currentPage: number
@@ -189,6 +209,7 @@ export async function fetchFilteredProducts(
   ORDER BY products.name ASC
   LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
 `;
+    console.log('product added');
     
     return products.rows;
     

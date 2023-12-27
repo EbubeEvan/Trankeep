@@ -1,9 +1,18 @@
 import { lusitana } from "@/app/ui/fonts";
-import NewProductForm from "@app/ui/products/new-product";
+import NewProductForm from "@app/ui/products/new-productform";
 import ProductTable from "@app/ui/products/product-table";
 import Search from "@app/ui/search";
 import { fetchProductsPages } from "@app/lib/data";
 import Pagination from "@app/ui/invoices/pagination";
+import { Suspense } from "react";
+import { InvoicesTableSkeleton } from "@/app/ui/skeletons";
+import { Metadata } from 'next';
+
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: 'Products',
+};
 
 const Products = async ({
   searchParams,
@@ -24,7 +33,9 @@ const Products = async ({
       </div>
       <NewProductForm />
       <Search placeholder="Search products..." />
-      <ProductTable query={query} currentPage={currentPage} />
+      <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+        <ProductTable query={query} currentPage={currentPage} />
+      </Suspense>
       <div className="mt-5 flex w-full justify-center">
         <Pagination totalPages={totalPages} />
       </div>

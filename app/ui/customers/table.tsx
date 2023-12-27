@@ -22,6 +22,7 @@ import { CreateCustomer } from '../invoices/buttons';
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
             <div className="overflow-hidden rounded-md bg-gray-50 p-2 md:pt-0">
+              {/* Mobile view */}
               <div className="md:hidden">
                 {customers?.map((customer) => (
                   <div
@@ -63,6 +64,8 @@ import { CreateCustomer } from '../invoices/buttons';
                   </div>
                 ))}
               </div>
+
+              {/* Desktop view */}
               <table className="hidden min-w-full rounded-md text-gray-900 md:table">
                 <thead className="rounded-md bg-gray-50 text-left text-sm font-normal">
                   <tr>
