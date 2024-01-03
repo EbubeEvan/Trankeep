@@ -4,11 +4,11 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Acme Dashboard',
-    default: 'Acme Dashboard',
+    template: '%s | Finkeep',
+    default: 'Finkeep',
   },
-  description: 'The official Next.js Learn Dashboard built with App Router.',
-  metadataBase: new URL('https://next-learn-dashboard.vercel.sh'),
+  description: 'Book Keeping app.',
+  metadataBase: new URL('https://finkeep-ebubeevan.vercel.app/'),
 };
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {

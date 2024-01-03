@@ -229,7 +229,6 @@ export const deleteProduct = async (id: string) => {
   try {
     await sql`DELETE FROM products WHERE id = ${id}`;
     revalidatePath('/dashboard/products');
-    console.log('deleted');
     return { message: "Deleted Product" };
   } catch (error) {
     return { message: "Database Error: Failed to Delete Product." };
@@ -238,7 +237,6 @@ export const deleteProduct = async (id: string) => {
 
 //register new user
 export const register = async (
-  prevState: string | undefined,
   formData: FormData
 ) => {
   const validatedFields = z
@@ -266,11 +264,9 @@ export const register = async (
       INSERT INTO users (id, name, email, password)
       VALUES (${userId}, ${name}, ${email}, ${hashedPassword})`;
   } catch (error) {
-    console.log(`error is: ${(error as Error).message}`);
-    if ((error as Error).message.includes("db error")) {
-      return "db error";
+    return {
+      message: "Database Error: Failed to register user.",
     }
-    throw error;
   }
 
   redirect("/login");

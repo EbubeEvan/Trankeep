@@ -4,19 +4,18 @@ import { lusitana } from "@/app/ui/fonts";
 import {
   AtSymbolIcon,
   KeyIcon,
-  ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { Button } from "./button";
-import { useFormState, useFormStatus } from "react-dom";
-import { register } from "@app/lib/actions";
+// import { useFormState, useFormStatus } from "react-dom";
+// import { register } from "@app/lib/actions";
 
 const SignInForm = () => {
-  const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useFormState(register, initialState);
+  // const initialState = { message: null, errors: {} };
+  // const [state, dispatch] = useFormState(register, initialState);
 
   return (
-    <form action={dispatch} className="space-y-3">
+    <form className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
         <h1 className={`${lusitana.className} mb-3 text-2xl`}>
           Please fill in the required information
@@ -80,7 +79,7 @@ const SignInForm = () => {
             </div>
           </div>
         </div>
-        <SignInButton />
+        {/* <SignInButton /> */}
         <div className="flex h-8 items-end space-x-1">
           {/* Add form errors here */}
           <div
@@ -88,12 +87,12 @@ const SignInForm = () => {
           aria-live="polite"
           aria-atomic="true"
         >
-          {state === 'db error' && (
+          {/* {state === 'db error' && (
             <>
               <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
               <p className="text-sm text-red-500">Email exists</p>
             </>
-          )}
+          )} */}
         </div>
         </div>
       </div>
@@ -101,14 +100,14 @@ const SignInForm = () => {
   );
 };
 
-function SignInButton() {
-  const { pending } = useFormStatus();
+// function SignInButton() {
+//   const { pending } = useFormStatus();
 
-  return (
-    <Button className="mt-4 w-full" aria-disabled={pending}>
-      Register <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
-    </Button>
-  );
-}
+//   return (
+//     <Button className="mt-4 w-full" aria-disabled={pending}>
+//       Register <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
+//     </Button>
+//   );
+// }
 
 export default SignInForm;
