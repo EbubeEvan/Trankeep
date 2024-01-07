@@ -237,6 +237,7 @@ export const deleteProduct = async (id: string) => {
 
 //register new user
 export const register = async (
+  prevState: string | undefined,
   formData: FormData
 ) => {
   const validatedFields = z
@@ -265,8 +266,8 @@ export const register = async (
       VALUES (${userId}, ${name}, ${email}, ${hashedPassword})`;
   } catch (error) {
     return {
-      message: "Database Error: Failed to register user.",
-    }
+      message: "Database Error: Failed to register.",
+    };
   }
 
   redirect("/login");

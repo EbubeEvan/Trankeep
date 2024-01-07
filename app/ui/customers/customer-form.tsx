@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
 import { Button } from "@app/ui/button";
-// import { addCustomer } from "@app/lib/actions";
+import { addCustomer } from "@app/lib/actions";
 
-import { useFormStatus } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import { useState, ChangeEvent } from "react";
 
 const CustomerForm = () => {
@@ -26,12 +26,12 @@ const CustomerForm = () => {
     }
   };
   
-  // const initialState = { message: null, errors: {} };
-  // const addCustomerSrc = addCustomer.bind(null, imageSrc);
-  // const [state, dispatch] = useFormState(addCustomerSrc, initialState);
+  const initialState = { message: null, errors: {} };
+  const addCustomerSrc = addCustomer.bind(null, imageSrc);
+  const [state, dispatch] = useFormState(addCustomerSrc as any, initialState);
 
   return (
-    <form>
+    <form action={dispatch}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
