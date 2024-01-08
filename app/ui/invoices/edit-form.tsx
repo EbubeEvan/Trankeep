@@ -10,7 +10,7 @@ import {
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 import { updateInvoice } from '@/app/lib/actions';
-import { useFormState } from 'react-dom';
+import { useFormState , useFormStatus } from 'react-dom';
 
  const 
  EditInvoiceForm = ({
@@ -157,10 +157,20 @@ import { useFormState } from 'react-dom';
         >
           Cancel
         </Link>
-        <Button type="submit">Edit Invoice</Button>
+        <EditButton/>
       </div>
     </form>
   );
+
+  function EditButton() {
+    const { pending } = useFormStatus();
+  
+    return (
+      <Button aria-disabled={pending}>
+        Edit Invoice
+      </Button>
+    );
+  }
 }
 
 export default EditInvoiceForm

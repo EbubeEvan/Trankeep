@@ -209,7 +209,6 @@ export async function fetchFilteredProducts(
   ORDER BY products.name ASC
   LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
 `;
-    console.log('product added');
     
     return products.rows;
     

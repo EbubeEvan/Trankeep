@@ -89,19 +89,27 @@ const CustomerForm = () => {
           </div>
         </fieldset>
       </div>
-      <div className="mt-6 flex justify-end gap-4">
+      <div className="mt-6 flex justify-end gap-[5rem]">
         <Link
           href="/dashboard/customers"
           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
           Cancel
         </Link>
-        <Button type="submit" disabled={pending}>
-          {pending ? "Adding Customer..." : "Add Customer"}
-        </Button>
+        <CustomerButton/>
       </div>
     </form>
   );
 };
+
+const CustomerButton = () => {
+  const { pending } = useFormStatus()
+
+  return (
+    <Button className="flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 max-lg:justify-center lg:ml-[-4rem]" aria-disabled={pending}>
+      Add Customer
+    </Button>
+  );
+}
 
 export default CustomerForm;
