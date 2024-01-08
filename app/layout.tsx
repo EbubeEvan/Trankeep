@@ -4,8 +4,8 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Finkeep',
-    default: 'Finkeep',
+    template: '%s | Trankeep',
+    default: 'Trankeep',
   },
   description: 'Book Keeping app.',
   metadataBase: new URL('https://finkeep-ebubeevan.vercel.app/'),
