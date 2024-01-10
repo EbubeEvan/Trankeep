@@ -27,8 +27,7 @@ const FormSchema = z.object({
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const UpdateInvoice = FormSchema.omit({ date: true, id: true });
 
-// This is temporary
-export type State = {
+export type InvoiceState = {
   errors?: {
     customerId?: string[];
     amount?: string[];
@@ -37,8 +36,36 @@ export type State = {
   message?: string | null;
 };
 
+export type CustomerState = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+  };
+  message?: string | null;
+};
+
+export type ProductState = {
+  errors?: {
+    name?: string[];
+    price?: string[];
+  };
+  message?: string | null;
+};
+
+export type RegisterState = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+    password?: string[];
+  };
+  message?: string | null;
+};
+
 // create invoice
-export const createInvoice = async (prevState: State, formData: FormData) => {
+export const createInvoice = async (
+  prevState: InvoiceState,
+  formData: FormData
+) => {
   // Validate form fields using Zod
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get("customerId"),
@@ -82,7 +109,7 @@ export const createInvoice = async (prevState: State, formData: FormData) => {
 // update invoice
 export const updateInvoice = async (
   id: string,
-  prevState: State,
+  prevState: InvoiceState,
   formData: FormData
 ) => {
   const validatedFields = UpdateInvoice.safeParse({
@@ -131,7 +158,7 @@ export const deleteInvoice = async (id: string) => {
 //Add customer
 export const addCustomer = async (
   image_url: string,
-  prevState: string | undefined,
+  prevState: CustomerState,
   formData: FormData
 ) => {
   const validatedFields = z
@@ -186,7 +213,7 @@ export const addCustomer = async (
 
 // Add Product
 export const addProduct = async (
-  prevState: string | undefined,
+  prevState: ProductState,
   formData: FormData
 ) => {
   const validatedFields = z
@@ -215,20 +242,23 @@ export const addProduct = async (
     await sql`
       INSERT INTO products (id, name, price)
       VALUES (${id}, ${name}, ${priceInCents})`;
+      
+    revalidatePath("/dashboard/products");
+    return {
+      message: "Product sucessfully added",
+    };
   } catch (error) {
     return {
       message: "Database Error: Failed to add product.",
     };
   }
-  revalidatePath('/dashboard/products');
 };
 
 // Delete Product
 export const deleteProduct = async (id: string) => {
-
   try {
     await sql`DELETE FROM products WHERE id = ${id}`;
-    revalidatePath('/dashboard/products');
+    revalidatePath("/dashboard/products");
     return { message: "Deleted Product" };
   } catch (error) {
     return { message: "Database Error: Failed to Delete Product." };
@@ -237,7 +267,7 @@ export const deleteProduct = async (id: string) => {
 
 //register new user
 export const register = async (
-  prevState: string | undefined,
+  prevState: RegisterState,
   formData: FormData
 ) => {
   const validatedFields = z

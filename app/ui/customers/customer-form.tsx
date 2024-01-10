@@ -11,8 +11,6 @@ import { useState, ChangeEvent } from "react";
 const CustomerForm = () => {
   const [imageSrc, setImageSrc] = useState<string>("");
 
-  const { pending } = useFormStatus();
-
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -28,7 +26,7 @@ const CustomerForm = () => {
   
   const initialState = { message: null, errors: {} };
   const addCustomerSrc = addCustomer.bind(null, imageSrc);
-  const [state, dispatch] = useFormState(addCustomerSrc as any, initialState);
+  const [state, dispatch] = useFormState(addCustomerSrc, initialState);
 
   return (
     <form action={dispatch}>

@@ -7,7 +7,7 @@ import { Button } from "../button";
 
 const NewProductForm = () => {
   const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useFormState(addProduct as any, initialState);
+  const [state, dispatch] = useFormState(addProduct, initialState);
 
   return (
     <div className="my-[2rem] pl-3">

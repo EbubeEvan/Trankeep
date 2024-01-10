@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     default: 'Trankeep',
   },
   description: 'Book Keeping app.',
-  metadataBase: new URL('https://finkeep-ebubeevan.vercel.app/'),
+  metadataBase: new URL('https://trankeep.vercel.app/'),
 };
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {

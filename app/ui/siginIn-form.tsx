@@ -13,7 +13,7 @@ import { register } from "@app/lib/actions";
 
 const SignInForm = () => {
   const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useFormState(register as any, initialState);
+  const [state, dispatch] = useFormState(register, initialState);
 
   return (
     <form action={dispatch} className="space-y-3">
