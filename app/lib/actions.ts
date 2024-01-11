@@ -1,5 +1,6 @@
 "use server";
 
+import { InvoiceState, CustomerState, ProductState, RegisterState } from "./definitions";
 import { z } from "zod";
 import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
@@ -26,40 +27,6 @@ const FormSchema = z.object({
 
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const UpdateInvoice = FormSchema.omit({ date: true, id: true });
-
-export type InvoiceState = {
-  errors?: {
-    customerId?: string[];
-    amount?: string[];
-    status?: string[];
-  };
-  message?: string | null;
-};
-
-export type CustomerState = {
-  errors?: {
-    name?: string[];
-    email?: string[];
-  };
-  message?: string | null;
-};
-
-export type ProductState = {
-  errors?: {
-    name?: string[];
-    price?: string[];
-  };
-  message?: string | null;
-};
-
-export type RegisterState = {
-  errors?: {
-    name?: string[];
-    email?: string[];
-    password?: string[];
-  };
-  message?: string | null;
-};
 
 // create invoice
 export const createInvoice = async (
