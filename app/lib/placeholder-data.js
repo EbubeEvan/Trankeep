@@ -141,90 +141,120 @@ const invoices = [
     amount: 15795,
     status: 'pending',
     date: '2022-12-06',
+    items: [{ name: "Clamide", unit: 1, price: 3421 }, { name: "Clofenac 50", unit: 5, price: 2062 }],
+    total: 5483
   },
   {
     customer_id: customers[1].id,
     amount: 20348,
     status: 'pending',
     date: '2022-11-14',
+    items: [{ name: "Diabetmin 500", unit: 3, price: 8712 }, { name: "Coloseal", unit: 2, price: 4718 }],
+    total: 13430
   },
   {
     customer_id: customers[4].id,
     amount: 3040,
     status: 'paid',
     date: '2022-10-29',
+    items: [{ name: "Famotab 40mg", unit: 10, price: 12320 }, { name: "Hovimax 250mg", unit: 20, price: 139360 }],
+    total: 151680
   },
   {
     customer_id: customers[3].id,
     amount: 44800,
     status: 'paid',
     date: '2023-09-10',
+    items: [{ name: "MET-GLIM", unit: 8, price: 385000 }, { name: "Omezole 20mg", unit: 7, price: 21868 }],
+    total: 406868
   },
   {
     customer_id: customers[5].id,
     amount: 34577,
     status: 'pending',
     date: '2023-08-05',
+    items: [{ name: "Hobetic", unit: 8, price: 55744 }, { name: "Flovid 200mg", unit: 7, price: 8624 }],
+    total: 64368
   },
   {
     customer_id: customers[7].id,
     amount: 54246,
     status: 'pending',
     date: '2023-07-16',
+    items: [{ name: "Omezole 20mg", unit: 412496, price: 385000 }, { name: "Clofenac 50", unit: 3, price: 6186 }],
+    total: 18682
   },
   {
     customer_id: customers[6].id,
     amount: 666,
     status: 'pending',
     date: '2023-06-27',
+    items: [{ name: "MET-GLIM", unit: 8, price: 385000 }, { name: "Omezole 20mg", unit: 7, price: 21868 }],
+    total: 406868
   },
   {
     customer_id: customers[3].id,
     amount: 32545,
     status: 'paid',
     date: '2023-06-09',
+    items: [{ name: "MET-GLIM", unit: 8, price: 385000 }, { name: "Diabetmin 500", unit: 2, price: 37821}],
+    total: 474902
   },
   {
     customer_id: customers[4].id,
     amount: 1250,
     status: 'paid',
     date: '2023-06-17',
+    items: [{ name: "Doxycap 100mg", unit: 10, price: 40640 }, { name: "Omezole 20mg", unit: 7, price: 21868 }],
+    total: 706868
   },
   {
     customer_id: customers[5].id,
     amount: 8546,
     status: 'paid',
     date: '2023-06-07',
+    items: [{ name: "Clofenac 50", unit: 3, price: 6186 }, { name: "Clofenac SR", unit: 5, price: 26520 }],
+    total: 85620
   },
   {
     customer_id: customers[1].id,
     amount: 500,
     status: 'paid',
     date: '2023-08-19',
+    items: [{ name: "Coloseal", unit: 8, price: 385000 }, { name: "Clamide", unit: 7, price: 21868 }],
+    total: 406868
   },
   {
     customer_id: customers[5].id,
     amount: 8945,
     status: 'paid',
     date: '2023-06-03',
+    items: [{ name: "MET-GLIM", unit: 1, price: 48125 }, { name: "Hovimax 250mg", unit: 7, price: 13860 }],
+    total: 61745
   },
   {
     customer_id: customers[2].id,
     amount: 8945,
     status: 'paid',
     date: '2023-06-18',
+    items: [{ name: "Hobetic", unit: 2, price: 2745 }, { name: "Omezole 20mg", unit: 10, price: 69680 }],
+    total: 76840
   },
   {
     customer_id: customers[0].id,
     amount: 8945,
     status: 'paid',
     date: '2023-10-04',
+    items: [{ name: "Flovid 200mg", unit: 8, price: 385000 }, { name: "Doxycap 100mgg", unit: 7, price: 21868 }],
+    total: 406868
   },
   {
     customer_id: customers[2].id,
     amount: 1000,
     status: 'paid',
     date: '2022-06-05',
+    items: [{ name: "Clamide", unit: 10, price: 34210 }, { name: "Diabetmin 500", unit: 10, price: 29040 }],
+    total: 63728
   },
 ];
 

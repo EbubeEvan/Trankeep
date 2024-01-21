@@ -9,19 +9,99 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
-import { updateInvoice } from '@/app/lib/actions';
+import { updateInvoice } from '@app/lib/actions';
 import { useFormState , useFormStatus } from 'react-dom';
+import { InputSet, Product } from '@/app/lib/definitions';
+import { useState } from 'react';
 
  const 
  EditInvoiceForm = ({
   invoice,
   customers,
+  products
 }: {
   invoice: InvoiceForm;
   customers: CustomerField[];
+  products: Product[]
 }) => {
+  const [inputSets, setInputSets] = useState<InputSet[]>(invoice.items);
+
+  const [foundProduct, setFoundProduct] = useState<Product>({
+    id: "",
+    name: "",
+    price: 0,
+  });
+
+console.log(typeof invoice.items, invoice.items);
+
+  const handleInputChange = (
+    index: number,
+    field: keyof InputSet,
+    value: string
+  ) => {
+    const updatedSets = [...inputSets];
+
+    if (field === "name") {
+      const selectedProduct = products.find(
+        (product) => product.name === value
+      );
+
+      if (selectedProduct) {
+        setFoundProduct(selectedProduct);
+        updatedSets[index].price = selectedProduct.price.toString();
+      }
+      updatedSets[index][field] = value;
+      
+    } else if (field === "unit") {
+      updatedSets[index][field] = value;
+
+      if (value !== "") {
+        const unitAsNumber = Number(value);
+
+        if (!isNaN(unitAsNumber) && !isNaN(foundProduct.price)) {
+          updatedSets[index].price = (
+            foundProduct.price * unitAsNumber
+          ).toString();
+        }
+      } else {
+        updatedSets[index].price = foundProduct.price.toString();
+      }
+      console.log('updatedSets[index].price', updatedSets[index].price)
+
+    } else {
+      updatedSets[index][field] = value;
+    }
+
+    setInputSets(updatedSets);
+  };
+
+  const handleAddSet = () => {
+    setInputSets([...inputSets, { name: "", unit: "", price: "" }]);
+  };
+
+  console.log('inputSets' , inputSets)
+
+  const handleRemoveSet = (index: number) => {
+    const updatedSets = [...inputSets];
+    updatedSets.splice(index, 1);
+    setInputSets(updatedSets);
+  };
+
+  const totalPrice = inputSets.reduce((acc, inputSet) => {
+    const priceAsNumber = Number(inputSet.price);
+    if (!isNaN(priceAsNumber)) {
+      acc += priceAsNumber;
+    }
+    return acc;
+  }, 0);
+  console.log('totalPrice', totalPrice);
+  
+  const productData : [InputSet[] , number] = [inputSets, totalPrice]
+  console.log( 'productData', productData);
+  
+
   const initialState = { message: null, errors: {} };
-  const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
+  const updateInvoiceWithId = updateInvoice.bind(null, invoice.id, productData);
   const [state, dispatch] = useFormState(updateInvoiceWithId, initialState);
 
   return (
@@ -62,35 +142,79 @@ import { useFormState , useFormStatus } from 'react-dom';
           </div>
         </div>
 
-        {/* Invoice Amount */}
-        <div className="mb-4">
-          <label htmlFor="amount" className="mb-2 block text-sm font-medium">
-            Choose an amount
-          </label>
-          <div className="relative mt-2 rounded-md">
-            <div className="relative">
+        {/* Product section */}
+        <div className="my-[2rem] text-sm">
+          <p className="mb-2">Choose Products</p>
+          {invoice.items.map((item, index) => (
+            <div key={index} className="flex flex-col lg:flex-row  gap-7 mb-4">
+              <select
+                id="customer"
+                className="peer block rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                aria-describedby="customer-error"
+                defaultValue={item.name}
+                onChange={(e) =>
+                  handleInputChange(index, "name", e.target.value)
+                }
+              >
+                <option value="" disabled>
+                  Select a product
+                </option>
+                {products.map((product) => (
+                  <option key={product.id} value={product.name}>
+                    {product.name}
+                  </option>
+                ))}
+              </select>
               <input
-                id="amount"
-                name="amount"
                 type="number"
-                defaultValue={invoice.amount}
-                step="0.01"
-                placeholder="Enter USD amount"
-                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                aria-describedby="amount-error"
+                placeholder="Unit"
+                className="peer block w-[5rem] rounded-md border border-gray-200 py-2 text-sm outline-2 placeholder:text-gray-500"
+                value={"" ? 1 : item.unit}
+                onChange={(e) =>
+                  handleInputChange(index, "unit", e.target.value)
+                }
               />
-              <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              <input
+                type="number"
+                placeholder="Price"
+                className="peer block w-[10rem] rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                readOnly
+                value={Number(item.price) / 100}
+                onChange={(e) =>
+                  handleInputChange(index, "price", e.target.value)
+                }
+              />
+              <CurrencyDollarIcon className="relative top-[-2.8rem] right-[-0.8rem] lg:top-[1.2rem] lg:right-[11rem] h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900"/>
+              {invoice.items.length > 1 && (
+                <button
+                  type="button"
+                  className="bg-red-500 text-slate-100 rounded-md px-3"
+                  onClick={() => handleRemoveSet(index)}
+                >
+                  Remove
+                </button>
+              )}
             </div>
-          </div>
+          ))}
+          <button
+            type="button"
+            className="bg-green-500 text-slate-100 rounded-md px-3"
+            onClick={handleAddSet}
+          >
+            Add
+          </button>
+        </div>
 
-          <div id="amount-error" aria-live="polite" aria-atomic="true">
-            {state.errors?.amount &&
-              state.errors.amount.map((error: string) => (
-                <p className="mt-2 text-sm text-red-500" key={error}>
-                  {error}
-                </p>
-              ))}
-          </div>
+        {/* Total amount */}
+        <div className="mb-[2rem] flex flex-col text-sm">
+          <label htmlFor="total">Total Amount</label>
+          <input
+            type="number"
+            readOnly
+            className="peer block w-[10rem] rounded-md border border-gray-200 py-2 pl-10 mt-2 text-sm outline-2 placeholder:text-gray-500"
+            value={totalPrice / 100}
+          />
+          <CurrencyDollarIcon className="relative top-[-1.2rem] left-[0.8rem] h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900"/>
         </div>
 
         {/* Invoice Status */}
@@ -106,12 +230,12 @@ import { useFormState , useFormStatus } from 'react-dom';
                   name="status"
                   type="radio"
                   value="pending"
-                  defaultChecked={invoice.status === 'pending'}
-                  className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
+                  className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-gray-600"
+                  aria-describedby="status-error"
                 />
                 <label
                   htmlFor="pending"
-                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600"
+                  className="ml-2 flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300"
                 >
                   Pending <ClockIcon className="h-4 w-4" />
                 </label>
@@ -122,32 +246,34 @@ import { useFormState , useFormStatus } from 'react-dom';
                   name="status"
                   type="radio"
                   value="paid"
-                  defaultChecked={invoice.status === 'paid'}
-                  className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
+                  className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-gray-600"
+                  aria-describedby="status-error"
                 />
                 <label
                   htmlFor="paid"
-                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-white"
+                  className="ml-2 flex items-center gap-1.5 rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-white dark:text-gray-300"
                 >
                   Paid <CheckIcon className="h-4 w-4" />
                 </label>
               </div>
             </div>
           </div>
-          <div id="status-error" aria-live="polite" aria-atomic="true">
+          <div id="customer-error" aria-live="polite" aria-atomic="true">
             {state.errors?.status &&
-              state.errors.status.map((error: string) => (
+              state.errors?.status.map((error: string) => (
                 <p className="mt-2 text-sm text-red-500" key={error}>
                   {error}
                 </p>
               ))}
           </div>
         </fieldset>
-
-        <div aria-live="polite" aria-atomic="true">
-          {state.message ? (
-            <p className="my-2 text-sm text-red-500">{state.message}</p>
-          ) : null}
+        <div id="customer-error" aria-live="polite" aria-atomic="true">
+          {state.errors?.customerId &&
+            state.errors.customerId.map((error: string) => (
+              <p className="mt-2 text-sm text-red-500" key={error}>
+                {state.message}
+              </p>
+            ))}
         </div>
       </div>
       <div className="mt-6 flex justify-end gap-4">
@@ -157,20 +283,16 @@ import { useFormState , useFormStatus } from 'react-dom';
         >
           Cancel
         </Link>
-        <EditButton/>
+        <CreateButton />
       </div>
     </form>
   );
+};
 
-  function EditButton() {
-    const { pending } = useFormStatus();
-  
-    return (
-      <Button aria-disabled={pending}>
-        Edit Invoice
-      </Button>
-    );
-  }
+function CreateButton() {
+  const { pending } = useFormStatus();
+
+  return <Button aria-disabled={pending}>Create Invoice</Button>;
 }
 
 export default EditInvoiceForm

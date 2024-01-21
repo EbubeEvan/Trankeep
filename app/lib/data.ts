@@ -14,19 +14,8 @@ import { formatCurrency } from "./utils";
 export const dynamic = "force-dynamic";
 
 export async function fetchRevenue() {
-  // Add noStore() here prevent the response from being cached.
-  // This is equivalent to in fetch(..., {cache: 'no-store'}).
-
   try {
-    // Artificially delay a reponse for demo purposes.
-    // Don't do this in real life :)
-
-    // console.log('Fetching revenue data...');
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
-
     const data = await sql<Revenue>`SELECT * FROM revenue`;
-
-    // console.log('Data fetch complete after 3 seconds.');
 
     return data.rows;
   } catch (error) {
@@ -38,7 +27,7 @@ export async function fetchRevenue() {
 export async function fetchLatestInvoices() {
   try {
     const data = await sql<LatestInvoiceRaw>`
-      SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
+      SELECT invoices.total, customers.name, customers.image_url, customers.email, invoices.id
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
       ORDER BY invoices.date DESC
@@ -46,7 +35,7 @@ export async function fetchLatestInvoices() {
 
     const latestInvoices = data.rows.map((invoice) => ({
       ...invoice,
-      amount: formatCurrency(invoice.amount),
+      total: formatCurrency(invoice.total),
     }));
     return latestInvoices;
   } catch (error) {
@@ -57,14 +46,11 @@ export async function fetchLatestInvoices() {
 
 export async function fetchCardData() {
   try {
-    // You can probably combine these into a single SQL query
-    // However, we are intentionally splitting them to demonstrate
-    // how to initialize multiple queries in parallel with JS.
     const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices`;
     const customerCountPromise = sql`SELECT COUNT(*) FROM customers`;
     const invoiceStatusPromise = sql`SELECT
-         SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
-         SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
+         SUM(CASE WHEN status = 'paid' THEN total ELSE 0 END) AS "paid",
+         SUM(CASE WHEN status = 'pending' THEN total ELSE 0 END) AS "pending"
          FROM invoices`;
 
     const data = await Promise.all([
@@ -102,7 +88,7 @@ export async function fetchFilteredInvoices(
     const invoices = await sql<InvoicesTable>`
       SELECT
         invoices.id,
-        invoices.amount,
+        invoices.total,
         invoices.date,
         invoices.status,
         customers.name,
@@ -113,7 +99,7 @@ export async function fetchFilteredInvoices(
       WHERE
         customers.name ILIKE ${`%${query}%`} OR
         customers.email ILIKE ${`%${query}%`} OR
-        invoices.amount::text ILIKE ${`%${query}%`} OR
+        invoices.total::text ILIKE ${`%${query}%`} OR
         invoices.date::text ILIKE ${`%${query}%`} OR
         invoices.status ILIKE ${`%${query}%`}
       ORDER BY invoices.date DESC
@@ -135,7 +121,7 @@ export async function fetchInvoicesPages(query: string) {
     WHERE
       customers.name ILIKE ${`%${query}%`} OR
       customers.email ILIKE ${`%${query}%`} OR
-      invoices.amount::text ILIKE ${`%${query}%`} OR
+      invoices.total::text ILIKE ${`%${query}%`} OR
       invoices.date::text ILIKE ${`%${query}%`} OR
       invoices.status ILIKE ${`%${query}%`}
   `;
@@ -154,7 +140,8 @@ export async function fetchInvoiceById(id: string) {
       SELECT
         invoices.id,
         invoices.customer_id,
-        invoices.amount,
+        invoices.items,
+        invoices.total,
         invoices.status
       FROM invoices
       WHERE invoices.id = ${id};
@@ -162,8 +149,8 @@ export async function fetchInvoiceById(id: string) {
 
     const invoice = data.rows.map((invoice) => ({
       ...invoice,
-      // Convert amount from cents to dollars
-      amount: invoice.amount / 100,
+      // Convert total from cents to dollars
+      total: invoice.total / 100,
     }));
     return invoice[0];
   } catch (error) {
@@ -266,8 +253,8 @@ export async function fetchFilteredCustomers(
 		  customers.email,
 		  customers.image_url,
 		  COUNT(invoices.id) AS total_invoices,
-		  SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
-		  SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
+		  SUM(CASE WHEN invoices.status = 'pending' THEN invoices.total ELSE 0 END) AS total_pending,
+		  SUM(CASE WHEN invoices.status = 'paid' THEN invoices.total ELSE 0 END) AS total_paid
 		FROM customers
 		LEFT JOIN invoices ON customers.id = invoices.customer_id
 		WHERE

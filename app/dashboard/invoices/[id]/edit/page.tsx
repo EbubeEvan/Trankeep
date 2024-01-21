@@ -1,13 +1,14 @@
 import Form from "@/app/ui/invoices/edit-form";
 import Breadcrumbs from "@/app/ui/invoices/breadcrumbs";
-import { fetchCustomers, fetchInvoiceById } from "@/app/lib/data";
+import { fetchCustomers, fetchProducts, fetchInvoiceById } from "@/app/lib/data";
 import { notFound } from 'next/navigation';
 
 const page = async ({ params }: { params: { id: string } }) => {
   const id = params.id;
-  const [invoice, customers] = await Promise.all([
+  const [invoice, customers, products] = await Promise.all([
     fetchInvoiceById(id),
     fetchCustomers(),
+    fetchProducts()
   ]);
 
   if (!invoice) {
@@ -26,7 +27,7 @@ const page = async ({ params }: { params: { id: string } }) => {
           },
         ]}
       />
-      <Form invoice={invoice} customers={customers} />
+      <Form invoice={invoice} customers={customers} products={products} />
     </main>
   );
 };

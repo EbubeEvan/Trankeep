@@ -1,12 +1,12 @@
-const { db } = require('@vercel/postgres');
+const { db } = require("@vercel/postgres");
 const {
   invoices,
   customers,
   revenue,
   users,
   products,
-} = require('../app/lib/placeholder-data.js');
-const bcrypt = require('bcrypt');
+} = require("../app/lib/placeholder-data.js");
+const bcrypt = require("bcrypt");
 
 async function seedUsers(client) {
   try {
@@ -32,7 +32,7 @@ async function seedUsers(client) {
         VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
         ON CONFLICT (id) DO NOTHING;
       `;
-      }),
+      })
     );
 
     console.log(`Seeded ${insertedUsers.length} users`);
@@ -42,7 +42,7 @@ async function seedUsers(client) {
       users: insertedUsers,
     };
   } catch (error) {
-    console.error('Error seeding users:', error);
+    console.error("Error seeding users:", error);
     throw error;
   }
 }
@@ -69,7 +69,7 @@ async function seedProducts(client) {
         VALUES (${product.id}, ${product.name}, ${product.price})
         ON CONFLICT (id) DO NOTHING;
       `;
-      }),
+      })
     );
 
     console.log(`Seeded ${insertedProducts.length} users`);
@@ -79,7 +79,7 @@ async function seedProducts(client) {
       products: insertedProducts,
     };
   } catch (error) {
-    console.error('Error seeding products:', error);
+    console.error("Error seeding products:", error);
     throw error;
   }
 }
@@ -90,26 +90,25 @@ async function seedInvoices(client) {
 
     // Create the "invoices" table if it doesn't exist
     const createTable = await client.sql`
-    CREATE TABLE IF NOT EXISTS invoices (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    customer_id UUID NOT NULL,
-    amount INT NOT NULL,
-    status VARCHAR(255) NOT NULL,
-    date DATE NOT NULL
-  );
-`;
+      CREATE TABLE IF NOT EXISTS invoices (
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+        customer_id UUID NOT NULL,
+        items JSONB NOT NULL,
+        total INT NOT NULL,
+        status VARCHAR(255) NOT NULL,
+        date DATE NOT NULL
+      );
+    `;
 
     console.log(`Created "invoices" table`);
 
     // Insert data into the "invoices" table
     const insertedInvoices = await Promise.all(
-      invoices.map(
-        (invoice) => client.sql`
-        INSERT INTO invoices (customer_id, amount, status, date)
-        VALUES (${invoice.customer_id}, ${invoice.amount}, ${invoice.status}, ${invoice.date})
-        ON CONFLICT (id) DO NOTHING;
-      `,
-      ),
+      invoices.map(async (invoice) =>  client.sql`
+            INSERT INTO invoices (customer_id, status, date, total, items)
+            VALUES (${invoice.customer_id}, ${invoice.status}, ${invoice.date}, ${invoice.total}, ${JSON.stringify(invoice.items)})
+            ON CONFLICT (id) DO NOTHING;`
+       )
     );
 
     console.log(`Seeded ${insertedInvoices.length} invoices`);
@@ -119,10 +118,11 @@ async function seedInvoices(client) {
       invoices: insertedInvoices,
     };
   } catch (error) {
-    console.error('Error seeding invoices:', error);
+    console.error("Error seeding invoices:", error);
     throw error;
   }
 }
+
 
 async function seedCustomers(client) {
   try {
@@ -147,8 +147,8 @@ async function seedCustomers(client) {
         INSERT INTO customers (id, name, email, image_url)
         VALUES (${customer.id}, ${customer.name}, ${customer.email}, ${customer.image_url})
         ON CONFLICT (id) DO NOTHING;
-      `,
-      ),
+      `
+      )
     );
 
     console.log(`Seeded ${insertedCustomers.length} customers`);
@@ -158,7 +158,7 @@ async function seedCustomers(client) {
       customers: insertedCustomers,
     };
   } catch (error) {
-    console.error('Error seeding customers:', error);
+    console.error("Error seeding customers:", error);
     throw error;
   }
 }
@@ -182,8 +182,8 @@ async function seedRevenue(client) {
         INSERT INTO revenue (month, revenue)
         VALUES (${rev.month}, ${rev.revenue})
         ON CONFLICT (month) DO NOTHING;
-      `,
-      ),
+      `
+      )
     );
 
     console.log(`Seeded ${insertedRevenue.length} revenue`);
@@ -193,7 +193,7 @@ async function seedRevenue(client) {
       revenue: insertedRevenue,
     };
   } catch (error) {
-    console.error('Error seeding revenue:', error);
+    console.error("Error seeding revenue:", error);
     throw error;
   }
 }
@@ -207,12 +207,20 @@ async function main() {
   await seedInvoices(client);
   await seedRevenue(client);
 
+  const result = await client.query("SELECT * FROM invoices");
+  result.rows.forEach((row) => {
+    console.log("Items for Invoice ID", row.id);
+    row.items.forEach((item) => {
+      console.log(item);
+    });
+  });
+
   await client.end();
 }
 
 main().catch((err) => {
   console.error(
-    'An error occurred while attempting to seed the database:',
-    err,
+    "An error occurred while attempting to seed the database:",
+    err
   );
 });

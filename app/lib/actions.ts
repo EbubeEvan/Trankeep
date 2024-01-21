@@ -1,6 +1,12 @@
 "use server";
 
-import { InvoiceState, CustomerState, ProductState, RegisterState } from "./definitions";
+import {
+  InvoiceState,
+  CustomerState,
+  ProductState,
+  RegisterState,
+  InputSet
+} from "./definitions";
 import { z } from "zod";
 import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
@@ -11,14 +17,24 @@ import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
 
+const inputSetSchema = z.object({
+  name: z.string(),
+  unit: z.coerce.number().min(1),
+  price: z.coerce.number(),
+});
+
+const InputschemaArray = z.array(inputSetSchema);
+
+const CompleteInputSchema = z.tuple([
+  (InputschemaArray),
+  z.coerce.number(),
+]);
+
 const FormSchema = z.object({
   id: z.string(),
   customerId: z.string({
     invalid_type_error: "Please select a customer.",
   }),
-  amount: z.coerce
-    .number()
-    .gt(0, { message: "Please enter an amount greater than $0." }),
   status: z.enum(["pending", "paid"], {
     invalid_type_error: "Please select an invoice status.",
   }),
@@ -30,37 +46,58 @@ const UpdateInvoice = FormSchema.omit({ date: true, id: true });
 
 // create invoice
 export const createInvoice = async (
+  productData: [InputSet[] , number],
   prevState: InvoiceState,
   formData: FormData
 ) => {
   // Validate form fields using Zod
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get("customerId"),
-    amount: formData.get("amount"),
     status: formData.get("status"),
   });
 
-  console.log(validatedFields);
+  console.log(validatedFields.success ? "Validation passed" : validatedFields.error.flatten());
+
+  const [inputSets, totalPrice] = productData;
+
+  const validatedProductFields = CompleteInputSchema.safeParse([inputSets, totalPrice]);
+
+  console.log(validatedProductFields.success ? "Product validation passed" : validatedProductFields.error.flatten());
 
   // If form validation fails, return errors early. Otherwise, continue.
-  if (!validatedFields.success) {
+  if (!validatedFields.success || !validatedProductFields.success) {
+    const fieldErrors = {
+      ...(validatedFields.success
+        ? {}
+        : validatedFields.error.flatten().fieldErrors),
+      ...(validatedProductFields.success
+        ? {}
+        : validatedProductFields.error.flatten().fieldErrors),
+    };
+
     return {
-      errors: validatedFields.error.flatten().fieldErrors,
+      errors: fieldErrors,
       message: "Missing Fields. Failed to Create Invoice.",
     };
   }
 
   // Prepare data for insertion into the database
-  const { customerId, amount, status } = validatedFields.data;
-  const amountInCents = amount * 100;
+  const { customerId, status } = validatedFields.data;
   const date = new Date().toISOString().split("T")[0];
+
+  const [items, total] = validatedProductFields.data;
+
+  // Convert the array of objects to a JSON string
+  const jsonItems = JSON.stringify(items);
 
   // Insert data into the database
   try {
     await sql`
-      INSERT INTO invoices (customer_id, amount, status, date)
-      VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
+      INSERT INTO invoices (customer_id, status, date, total, items)
+      VALUES ( ${customerId}, ${status}, ${date}, ${total}, ${jsonItems} )
     `;
+    console.log('invoice added');
+    
   } catch (error) {
     // If a database error occurs, return a more specific error.
     return {
@@ -76,29 +113,56 @@ export const createInvoice = async (
 // update invoice
 export const updateInvoice = async (
   id: string,
+  productData: [InputSet[] , number],
   prevState: InvoiceState,
   formData: FormData
 ) => {
-  const validatedFields = UpdateInvoice.safeParse({
+  // Validate form fields using Zod
+  const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get("customerId"),
-    amount: formData.get("amount"),
     status: formData.get("status"),
   });
 
-  if (!validatedFields.success) {
+  console.log(validatedFields.success ? "Validation passed" : validatedFields.error.flatten());
+
+  const [inputSets, totalPrice] = productData;
+
+  const validatedProductFields = CompleteInputSchema.safeParse([inputSets, totalPrice]);
+
+  console.log(validatedProductFields.success ? "Product validation passed" : validatedProductFields.error.flatten());
+
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success || !validatedProductFields.success) {
+    const fieldErrors = {
+      ...(validatedFields.success
+        ? {}
+        : validatedFields.error.flatten().fieldErrors),
+      ...(validatedProductFields.success
+        ? {}
+        : validatedProductFields.error.flatten().fieldErrors),
+    };
+
     return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Update Invoice.",
+      errors: fieldErrors,
+      message: "Missing Fields. Failed to Create Invoice.",
     };
   }
 
-  const { customerId, amount, status } = validatedFields.data;
-  const amountInCents = amount * 100;
+  // Prepare data for insertion into the database
+  const { customerId, status } = validatedFields.data;
+  const date = new Date().toISOString().split("T")[0];
+
+  const [items, total] = validatedProductFields.data;
+
+  // Convert the array of objects to a JSON string
+  const jsonItems = JSON.stringify(items);
+
+  // Insert data into the database
 
   try {
     await sql`
       UPDATE invoices
-      SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
+      SET customer_id = ${customerId}, status = ${status}, total = ${total}, items = ${jsonItems}
       WHERE id = ${id}
     `;
   } catch (error) {
@@ -209,7 +273,7 @@ export const addProduct = async (
     await sql`
       INSERT INTO products (id, name, price)
       VALUES (${id}, ${name}, ${priceInCents})`;
-      
+
     revalidatePath("/dashboard/products");
     return {
       message: "Product sucessfully added",

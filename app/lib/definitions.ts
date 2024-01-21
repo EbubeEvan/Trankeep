@@ -21,7 +21,8 @@ export type Customer = {
 export type Invoice = {
   id: string;
   customer_id: string;
-  amount: number;
+  items: InputSet[]
+  total: number;
   date: string;
   status: 'pending' | 'paid';
 };
@@ -36,11 +37,11 @@ export type LatestInvoice = {
   name: string;
   image_url: string;
   email: string;
-  amount: string;
+  total: string;
 };
 
-export type LatestInvoiceRaw = Omit<LatestInvoice, 'amount'> & {
-  amount: number;
+export type LatestInvoiceRaw = Omit<LatestInvoice, 'total'> & {
+  total: number;
 };
 
 export type InvoicesTable = {
@@ -50,7 +51,7 @@ export type InvoicesTable = {
   email: string;
   image_url: string;
   date: string;
-  amount: number;
+  total: number;
   status: 'pending' | 'paid';
 };
 
@@ -82,14 +83,15 @@ export type CustomerField = {
 export type InvoiceForm = {
   id: string;
   customer_id: string;
-  amount: number;
+  items: InputSet[]
+  total: number;
   status: 'pending' | 'paid';
 };
 
 export type InvoiceState = {
   errors?: {
     customerId?: string[];
-    amount?: string[];
+    total?: string[];
     status?: string[];
   };
   message?: string | null;
@@ -119,3 +121,9 @@ export type RegisterState = {
   };
   message?: string | null;
 };
+
+export interface InputSet {
+  name: string;
+  unit: string;
+  price: string;
+}

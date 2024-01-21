@@ -1,6 +1,6 @@
 "use client";
 
-import { CustomerField } from "@/app/lib/definitions";
+import { CustomerField, Product } from "@/app/lib/definitions";
 import Link from "next/link";
 import {
   CheckIcon,
@@ -11,10 +11,92 @@ import {
 import { Button } from "@app/ui/button";
 import { createInvoice } from "@app/lib/actions";
 import { useFormState, useFormStatus } from "react-dom";
+import { useState } from "react";
+import { InputSet } from "@/app/lib/definitions";
 
-const Form = ({ customers }: { customers: CustomerField[] }) => {
+const Form = ({
+  customers,
+  products,
+}: {
+  customers: CustomerField[];
+  products: Product[];
+}) => {
+  const [inputSets, setInputSets] = useState<InputSet[]>([
+    { name: "", unit: "", price: "" },
+  ]);
+  const [foundProduct, setFoundProduct] = useState<Product>({
+    id: "",
+    name: "",
+    price: 0,
+  });
+
+  const handleInputChange = (
+    index: number,
+    field: keyof InputSet,
+    value: string
+  ) => {
+    const updatedSets = [...inputSets];
+
+    if (field === "name") {
+      const selectedProduct = products.find(
+        (product) => product.name === value
+      );
+
+      if (selectedProduct) {
+        setFoundProduct(selectedProduct);
+        updatedSets[index].price = selectedProduct.price.toString();
+      }
+      updatedSets[index][field] = value;
+      
+    } else if (field === "unit") {
+      updatedSets[index][field] = value;
+
+      if (value !== "") {
+        const unitAsNumber = Number(value);
+
+        if (!isNaN(unitAsNumber) && !isNaN(foundProduct.price)) {
+          updatedSets[index].price = (
+            foundProduct.price * unitAsNumber
+          ).toString();
+        }
+      } else {
+        updatedSets[index].price = foundProduct.price.toString();
+      }
+      console.log('updatedSets[index].price', updatedSets[index].price)
+
+    } else {
+      updatedSets[index][field] = value;
+    }
+
+    setInputSets(updatedSets);
+  };
+
+  const handleAddSet = () => {
+    setInputSets([...inputSets, { name: "", unit: "", price: "" }]);
+  };
+
+  const handleRemoveSet = (index: number) => {
+    const updatedSets = [...inputSets];
+    updatedSets.splice(index, 1);
+    setInputSets(updatedSets);
+  };
+
+  const totalPrice = inputSets.reduce((acc, inputSet) => {
+    const priceAsNumber = Number(inputSet.price);
+    if (!isNaN(priceAsNumber)) {
+      acc += priceAsNumber;
+    }
+    return acc;
+  }, 0);
+  console.log('totalPrice', totalPrice);
+  
+  const productData : [InputSet[] , number] = [inputSets, totalPrice]
+  console.log( 'productData', productData);
+  
+
   const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useFormState(createInvoice, initialState);
+  const createInvoiceData = createInvoice.bind(null, productData)
+  const [state, dispatch] = useFormState(createInvoiceData, initialState);
 
   return (
     <form action={dispatch}>
@@ -53,33 +135,79 @@ const Form = ({ customers }: { customers: CustomerField[] }) => {
           </div>
         </div>
 
-        {/* Invoice Amount */}
-        <div className="mb-4">
-          <label htmlFor="amount" className="mb-2 block text-sm font-medium">
-            Choose an amount
-          </label>
-          <div className="relative mt-2 rounded-md">
-            <div className="relative">
-              <input
-                id="amount"
-                name="amount"
-                type="number"
-                step="0.01"
-                placeholder="Enter USD amount"
-                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                aria-describedby="amount-error"
-              />
-              <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
-            <div id="customer-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.amount &&
-                state.errors.amount.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
+        {/* Product section */}
+        <div className="my-[2rem] text-sm">
+          <p className="mb-2">Choose Products</p>
+          {inputSets.map((inputSet, index) => (
+            <div key={index} className="flex flex-col lg:flex-row  gap-7 mb-4">
+              <select
+                id="customer"
+                className="peer block rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                aria-describedby="customer-error"
+                value={inputSet.name}
+                onChange={(e) =>
+                  handleInputChange(index, "name", e.target.value)
+                }
+              >
+                <option value="" disabled>
+                  Select a product
+                </option>
+                {products.map((product) => (
+                  <option key={product.id} value={product.name}>
+                    {product.name}
+                  </option>
                 ))}
+              </select>
+              <input
+                type="number"
+                placeholder="Unit"
+                className="peer block w-[5rem] rounded-md border border-gray-200 py-2 text-sm outline-2 placeholder:text-gray-500"
+                value={"" ? 1 : inputSet.unit}
+                onChange={(e) =>
+                  handleInputChange(index, "unit", e.target.value)
+                }
+              />
+              <input
+                type="number"
+                placeholder="Price"
+                className="peer block w-[10rem] rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                readOnly
+                value={Number(inputSet.price) / 100}
+                onChange={(e) =>
+                  handleInputChange(index, "price", e.target.value)
+                }
+              />
+              <CurrencyDollarIcon className="relative top-[-2.8rem] right-[-0.8rem] lg:top-[1.2rem] lg:right-[11rem] h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900"/>
+              {inputSets.length > 1 && (
+                <button
+                  type="button"
+                  className="bg-red-500 text-slate-100 rounded-md px-3"
+                  onClick={() => handleRemoveSet(index)}
+                >
+                  Remove
+                </button>
+              )}
             </div>
-          </div>
+          ))}
+          <button
+            type="button"
+            className="bg-green-500 text-slate-100 rounded-md px-3"
+            onClick={handleAddSet}
+          >
+            Add
+          </button>
+        </div>
+
+        {/* Total amount */}
+        <div className="mb-[2rem] flex flex-col text-sm">
+          <label htmlFor="total">Total Amount</label>
+          <input
+            type="number"
+            readOnly
+            className="peer block w-[10rem] rounded-md border border-gray-200 py-2 pl-10 mt-2 text-sm outline-2 placeholder:text-gray-500"
+            defaultValue={totalPrice / 100}
+          />
+          <CurrencyDollarIcon className="relative top-[-1.2rem] left-[0.8rem] h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900"/>
         </div>
 
         {/* Invoice Status */}
@@ -124,13 +252,13 @@ const Form = ({ customers }: { customers: CustomerField[] }) => {
             </div>
           </div>
           <div id="customer-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.status &&
-                state.errors?.status.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
-            </div>
+            {state.errors?.status &&
+              state.errors?.status.map((error: string) => (
+                <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
+          </div>
         </fieldset>
         <div id="customer-error" aria-live="polite" aria-atomic="true">
           {state.errors?.customerId &&
@@ -148,7 +276,7 @@ const Form = ({ customers }: { customers: CustomerField[] }) => {
         >
           Cancel
         </Link>
-        <CreateButton/>
+        <CreateButton />
       </div>
     </form>
   );
@@ -157,11 +285,7 @@ const Form = ({ customers }: { customers: CustomerField[] }) => {
 function CreateButton() {
   const { pending } = useFormStatus();
 
-  return (
-    <Button aria-disabled={pending}>
-      Create Invoice
-    </Button>
-  );
+  return <Button aria-disabled={pending}>Create Invoice</Button>;
 }
 
 export default Form;
