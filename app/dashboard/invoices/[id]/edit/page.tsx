@@ -3,6 +3,8 @@ import Breadcrumbs from "@/app/ui/invoices/breadcrumbs";
 import { fetchCustomers, fetchProducts, fetchInvoiceById } from "@/app/lib/data";
 import { notFound } from 'next/navigation';
 
+export const dynamic = "force-dynamic";
+
 const page = async ({ params }: { params: { id: string } }) => {
   const id = params.id;
   const [invoice, customers, products] = await Promise.all([
