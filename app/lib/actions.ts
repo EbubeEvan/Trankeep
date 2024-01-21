@@ -18,8 +18,10 @@ import fs from "fs";
 import path from "path";
 
 const inputSetSchema = z.object({
-  name: z.string(),
-  unit: z.coerce.number().min(1),
+  name: z.string({
+    invalid_type_error: "Please select a product.",
+  }),
+  unit: z.coerce.number().min(1, {message : "Please select an unit number."}),
   price: z.coerce.number(),
 });
 

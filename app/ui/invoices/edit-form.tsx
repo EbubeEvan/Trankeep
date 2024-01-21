@@ -1,28 +1,27 @@
-'use client';
+"use client";
 
-import { CustomerField, InvoiceForm } from '@/app/lib/definitions';
+import { CustomerField, InvoiceForm } from "@/app/lib/definitions";
 import {
   CheckIcon,
   ClockIcon,
   CurrencyDollarIcon,
   UserCircleIcon,
-} from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import { Button } from '@/app/ui/button';
-import { updateInvoice } from '@app/lib/actions';
-import { useFormState , useFormStatus } from 'react-dom';
-import { InputSet, Product } from '@/app/lib/definitions';
-import { useState } from 'react';
+} from "@heroicons/react/24/outline";
+import Link from "next/link";
+import { Button } from "@/app/ui/button";
+import { updateInvoice } from "@app/lib/actions";
+import { useFormState, useFormStatus } from "react-dom";
+import { InputSet, Product } from "@/app/lib/definitions";
+import { useState } from "react";
 
- const 
- EditInvoiceForm = ({
+const EditInvoiceForm = ({
   invoice,
   customers,
-  products
+  products,
 }: {
   invoice: InvoiceForm;
   customers: CustomerField[];
-  products: Product[]
+  products: Product[];
 }) => {
   const [inputSets, setInputSets] = useState<InputSet[]>(invoice.items);
 
@@ -32,7 +31,7 @@ import { useState } from 'react';
     price: 0,
   });
 
-console.log(typeof invoice.items, invoice.items);
+  console.log(typeof invoice.items, invoice.items);
 
   const handleInputChange = (
     index: number,
@@ -51,7 +50,6 @@ console.log(typeof invoice.items, invoice.items);
         updatedSets[index].price = selectedProduct.price.toString();
       }
       updatedSets[index][field] = value;
-      
     } else if (field === "unit") {
       updatedSets[index][field] = value;
 
@@ -66,8 +64,7 @@ console.log(typeof invoice.items, invoice.items);
       } else {
         updatedSets[index].price = foundProduct.price.toString();
       }
-      console.log('updatedSets[index].price', updatedSets[index].price)
-
+      console.log("updatedSets[index].price", updatedSets[index].price);
     } else {
       updatedSets[index][field] = value;
     }
@@ -79,7 +76,7 @@ console.log(typeof invoice.items, invoice.items);
     setInputSets([...inputSets, { name: "", unit: "", price: "" }]);
   };
 
-  console.log('inputSets' , inputSets)
+  console.log("inputSets", inputSets);
 
   const handleRemoveSet = (index: number) => {
     const updatedSets = [...inputSets];
@@ -94,11 +91,10 @@ console.log(typeof invoice.items, invoice.items);
     }
     return acc;
   }, 0);
-  console.log('totalPrice', totalPrice);
-  
-  const productData : [InputSet[] , number] = [inputSets, totalPrice]
-  console.log( 'productData', productData);
-  
+  console.log("totalPrice", totalPrice);
+
+  const productData: [InputSet[], number] = [inputSets, totalPrice];
+  console.log("productData", productData);
 
   const initialState = { message: null, errors: {} };
   const updateInvoiceWithId = updateInvoice.bind(null, invoice.id, productData);
@@ -131,7 +127,7 @@ console.log(typeof invoice.items, invoice.items);
             </select>
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
-
+          {/* error */}
           <div id="customer-error" aria-live="polite" aria-atomic="true">
             {state.errors?.customerId &&
               state.errors.customerId.map((error: string) => (
@@ -145,13 +141,13 @@ console.log(typeof invoice.items, invoice.items);
         {/* Product section */}
         <div className="my-[2rem] text-sm">
           <p className="mb-2">Choose Products</p>
-          {invoice.items.map((item, index) => (
+          {inputSets.map((inputSet, index) => (
             <div key={index} className="flex flex-col lg:flex-row  gap-7 mb-4">
               <select
                 id="customer"
                 className="peer block rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 aria-describedby="customer-error"
-                defaultValue={item.name}
+                defaultValue={inputSet.name}
                 onChange={(e) =>
                   handleInputChange(index, "name", e.target.value)
                 }
@@ -169,7 +165,7 @@ console.log(typeof invoice.items, invoice.items);
                 type="number"
                 placeholder="Unit"
                 className="peer block w-[5rem] rounded-md border border-gray-200 py-2 text-sm outline-2 placeholder:text-gray-500"
-                value={"" ? 1 : item.unit}
+                value={"" ? 1 : inputSet.unit}
                 onChange={(e) =>
                   handleInputChange(index, "unit", e.target.value)
                 }
@@ -179,13 +175,13 @@ console.log(typeof invoice.items, invoice.items);
                 placeholder="Price"
                 className="peer block w-[10rem] rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 readOnly
-                value={Number(item.price) / 100}
+                value={Number(inputSet.price) / 100}
                 onChange={(e) =>
                   handleInputChange(index, "price", e.target.value)
                 }
               />
-              <CurrencyDollarIcon className="relative top-[-2.8rem] right-[-0.8rem] lg:top-[1.2rem] lg:right-[11rem] h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900"/>
-              {invoice.items.length > 1 && (
+              <CurrencyDollarIcon className="relative top-[-2.8rem] right-[-0.8rem] lg:top-[1.2rem] lg:right-[11rem] h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              {inputSets.length > 1 && (
                 <button
                   type="button"
                   className="bg-red-500 text-slate-100 rounded-md px-3"
@@ -212,9 +208,9 @@ console.log(typeof invoice.items, invoice.items);
             type="number"
             readOnly
             className="peer block w-[10rem] rounded-md border border-gray-200 py-2 pl-10 mt-2 text-sm outline-2 placeholder:text-gray-500"
-            value={totalPrice / 100}
+            defaultValue={totalPrice / 100}
           />
-          <CurrencyDollarIcon className="relative top-[-1.2rem] left-[0.8rem] h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900"/>
+          <CurrencyDollarIcon className="relative top-[-1.2rem] left-[0.8rem] h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
         </div>
 
         {/* Invoice Status */}
@@ -230,6 +226,7 @@ console.log(typeof invoice.items, invoice.items);
                   name="status"
                   type="radio"
                   value="pending"
+                  defaultChecked={invoice.status === "pending"}
                   className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-gray-600"
                   aria-describedby="status-error"
                 />
@@ -246,6 +243,7 @@ console.log(typeof invoice.items, invoice.items);
                   name="status"
                   type="radio"
                   value="paid"
+                  defaultChecked={invoice.status === "paid"}
                   className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-gray-600"
                   aria-describedby="status-error"
                 />
@@ -267,6 +265,7 @@ console.log(typeof invoice.items, invoice.items);
               ))}
           </div>
         </fieldset>
+        {/* error */}
         <div id="customer-error" aria-live="polite" aria-atomic="true">
           {state.errors?.customerId &&
             state.errors.customerId.map((error: string) => (
@@ -292,7 +291,7 @@ console.log(typeof invoice.items, invoice.items);
 function CreateButton() {
   const { pending } = useFormStatus();
 
-  return <Button aria-disabled={pending}>Create Invoice</Button>;
+  return <Button aria-disabled={pending}>Edit Invoice</Button>;
 }
 
-export default EditInvoiceForm
+export default EditInvoiceForm;
