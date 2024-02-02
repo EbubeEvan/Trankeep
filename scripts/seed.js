@@ -1,6 +1,7 @@
 const { db } = require("@vercel/postgres");
 const {
   invoices,
+  reciepts,
   customers,
   revenue,
   users,
@@ -17,7 +18,9 @@ async function seedUsers(client) {
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL
+        password TEXT NOT NULL,
+        company TEXT NOT NULL,
+        address TEXT NOT NULL
       );
     `;
 
@@ -28,8 +31,8 @@ async function seedUsers(client) {
       users.map(async (user) => {
         const hashedPassword = await bcrypt.hash(user.password, 10);
         return client.sql`
-        INSERT INTO users (id, name, email, password)
-        VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
+        INSERT INTO users (id, name, email, password, company, address)
+        VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword}, ${user.company}, ${user.address})
         ON CONFLICT (id) DO NOTHING;
       `;
       })
@@ -123,6 +126,44 @@ async function seedInvoices(client) {
   }
 }
 
+async function seedReciepts(client) {
+  try {
+    await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+    // Create the "reciepts" table if it doesn't exist
+    const createTable = await client.sql`
+      CREATE TABLE IF NOT EXISTS reciepts (
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+        customer_id UUID NOT NULL,
+        items JSONB NOT NULL,
+        total INT NOT NULL,
+        date DATE NOT NULL
+      );
+    `;
+
+    console.log(`Created "reciepts" table`);
+
+    // Insert data into the "reciepts" table
+    const insertedReceipts = await Promise.all(
+      reciepts.map(async (reciept) =>  client.sql`
+            INSERT INTO reciepts (customer_id, date, total, items)
+            VALUES (${reciept.customer_id}, ${reciept.date}, ${reciept.total}, ${JSON.stringify(reciept.items)})
+            ON CONFLICT (id) DO NOTHING;`
+       )
+    );
+
+    console.log(`Seeded ${insertedReceipts.length} reciepts`);
+
+    return {
+      createTable,
+      reciepts: insertedReceipts,
+    };
+  } catch (error) {
+    console.error("Error seeding reciepts:", error);
+    throw error;
+  }
+}
+
 
 async function seedCustomers(client) {
   try {
@@ -134,7 +175,9 @@ async function seedCustomers(client) {
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL,
-        image_url VARCHAR(255) NOT NULL
+        image_url VARCHAR(255) NOT NULL,
+        company TEXT NOT NULL,
+        address TEXT NOT NULL
       );
     `;
 
@@ -144,8 +187,8 @@ async function seedCustomers(client) {
     const insertedCustomers = await Promise.all(
       customers.map(
         (customer) => client.sql`
-        INSERT INTO customers (id, name, email, image_url)
-        VALUES (${customer.id}, ${customer.name}, ${customer.email}, ${customer.image_url})
+        INSERT INTO customers (id, name, email, image_url, company, address)
+        VALUES (${customer.id}, ${customer.name}, ${customer.email}, ${customer.image_url}, ${customer.company}, ${customer.address})
         ON CONFLICT (id) DO NOTHING;
       `
       )
@@ -205,6 +248,7 @@ async function main() {
   await seedProducts(client);
   await seedCustomers(client);
   await seedInvoices(client);
+  await seedReciepts(client);
   await seedRevenue(client);
 
   const result = await client.query("SELECT * FROM invoices");

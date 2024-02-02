@@ -309,6 +309,8 @@ export const register = async (
       name: z.string(),
       email: z.string().email(),
       password: z.string().min(6),
+      company: z.string(),
+      address: z.string(),
     })
     .safeParse(Object.fromEntries(formData.entries()));
 
@@ -319,15 +321,15 @@ export const register = async (
     };
   }
 
-  const { name, email, password } = validatedFields.data;
+  const { name, email, password, company, address } = validatedFields.data;
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
     const userId = uuidv4(); // Generate UUID for the user ID
     await sql`
-      INSERT INTO users (id, name, email, password)
-      VALUES (${userId}, ${name}, ${email}, ${hashedPassword})`;
+      INSERT INTO users (id, name, email, password, company, address)
+      VALUES (${userId}, ${name}, ${email}, ${hashedPassword}, ${company}, ${address})`;
   } catch (error) {
     return {
       message: "Database Error: Failed to register.",

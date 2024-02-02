@@ -1,9 +1,11 @@
 import { sql } from "@vercel/postgres";
 import {
   CustomerField,
+  CompleteCustomers,
   CustomersTable,
   InvoiceForm,
   InvoicesTable,
+  RecieptsTable,
   LatestInvoiceRaw,
   User,
   Revenue,
@@ -158,6 +160,62 @@ export async function fetchInvoiceById(id: string) {
   }
 }
 
+export async function fetchFilteredReciepts(
+  query: string,
+  currentPage: number
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const reciepts = await sql<RecieptsTable>`
+      SELECT
+        RecieptsTable.id,
+        reciepts.total,
+        reciepts.date,
+        reciepts.status,
+        customers.name,
+        customers.email,
+        customers.image_url
+        customers.company
+        customers.address
+      FROM reciepts
+      JOIN customers ON reciepts.customer_id = customers.id
+      WHERE
+        customers.name ILIKE ${`%${query}%`} OR
+        customers.email ILIKE ${`%${query}%`} OR
+        reciepts.total::text ILIKE ${`%${query}%`} OR
+        reciepts.date::text ILIKE ${`%${query}%`}
+      ORDER BY reciepts.date DESC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `;
+
+    return reciepts.rows;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch reciepts.");
+  }
+}
+
+export async function fetchRecieptsPages(query: string) {
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM reciepts
+    JOIN customers ON reciepts.customer_id = customers.id
+    WHERE
+      customers.name ILIKE ${`%${query}%`} OR
+      customers.email ILIKE ${`%${query}%`} OR
+      reciepts.total::text ILIKE ${`%${query}%`} OR
+      reciepts.date::text ILIKE ${`%${query}%`}
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch total number of reciepts.");
+  }
+}
+
 export async function fetchProducts() {
   try {
     const data = await sql<Product>`
@@ -231,6 +289,18 @@ export async function fetchCustomers() {
       FROM customers
       ORDER BY name ASC
     `;
+
+    const customers = data.rows;
+    return customers;
+  } catch (err) {
+    console.error("Database Error:", err);
+    throw new Error("Failed to fetch all customers.");
+  }
+}
+
+export async function fetchCompleteCustomers() {
+  try {
+    const data = await sql<CompleteCustomers>`SELECT * FROM customers`
 
     const customers = data.rows;
     return customers;
