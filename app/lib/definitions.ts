@@ -3,6 +3,8 @@ export type User = {
   name: string;
   email: string;
   password: string;
+  company: string;
+  address: string;
 };
 
 export type Product = {
@@ -16,6 +18,8 @@ export type Customer = {
   name: string;
   email: string;
   image_url: string;
+  company: string;
+  address: string;
 };
 
 export type Invoice = {
@@ -25,6 +29,14 @@ export type Invoice = {
   total: number;
   date: string;
   status: 'pending' | 'paid';
+};
+
+export type reciept = {
+  id: string;
+  customer_id: string;
+  items: InputSet[]
+  total: number;
+  date: string;
 };
 
 export type Revenue = {
@@ -55,6 +67,18 @@ export type InvoicesTable = {
   status: 'pending' | 'paid';
 };
 
+export type RecieptsTable = {
+  id: string;
+  customer_id: string;
+  name: string;
+  email: string;
+  image_url: string;
+  date: string;
+  total: number;
+  company: string;
+  address: string
+};
+
 export type CustomersTable = {
   id: string;
   name: string;
@@ -79,6 +103,15 @@ export type CustomerField = {
   id: string;
   name: string;
 };
+
+export type CompleteCustomers = {
+  id : string;
+  name : string;
+  email : string;
+  image_url : string;
+  company : string;
+  address : string;
+}
 
 export type InvoiceForm = {
   id: string;
@@ -118,6 +151,8 @@ export type RegisterState = {
     name?: string[];
     email?: string[];
     password?: string[];
+    company?: string[];
+    address?: string[];
   };
   message?: string | null;
 };
