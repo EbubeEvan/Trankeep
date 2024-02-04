@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 const PDFDocument = require('pdfkit')
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function POST(req: NextApiRequest, res: NextApiResponse) {
   try {
     const htmlContent = req.body.htmlContent; // Assuming HTML content is sent in request body
 
