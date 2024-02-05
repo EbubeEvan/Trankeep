@@ -13,7 +13,7 @@
 //       body: JSON.stringify({ htmlContent }),
 //     });
 
-//     const data = await response.json();
+//     const {data} = await response.json();
 //     setPdfUrl(data.url);
 //   } catch (error) {
 //     // Handle errors

@@ -1,9 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-const PDFDocument = require('pdfkit')
+const PDFDocument = require("pdfkit");
 
-export default async function POST(req: NextApiRequest, res: NextApiResponse) {
+export default async function POST(req: Request) {
   try {
-    const htmlContent = req.body.htmlContent; // Assuming HTML content is sent in request body
+    const { htmlContent } = await req.json(); // Assuming HTML content is sent in request body
 
     const doc = new PDFDocument();
     doc.addPage();
@@ -15,16 +14,13 @@ export default async function POST(req: NextApiRequest, res: NextApiResponse) {
     });
     doc.end();
 
-    const blob = new Blob([doc.output()], { type: 'application/pdf' });
+    const blob = new Blob([doc.output()], { type: "application/pdf" });
 
     const url = URL.createObjectURL(blob); // Generate URL for viewing/downloading
 
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=report.pdf');
-
-    res.status(201).json({ url }); // Send URL in response
+    return new Response(JSON.stringify({ url }), { status: 200 });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Failed to generate PDF' });
+    return new Response("Failed to fetch generate pdf", { status: 500 });
   }
 }
