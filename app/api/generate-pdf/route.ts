@@ -1,6 +1,6 @@
 const PDFDocument = require("pdfkit");
 
-export default async function POST(req: Request) {
+export async function POST(req: Request) {
   try {
     const { htmlContent } = await req.json(); // Assuming HTML content is sent in request body
 
