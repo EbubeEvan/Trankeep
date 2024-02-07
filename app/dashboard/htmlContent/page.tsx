@@ -1,6 +1,14 @@
-import React from "react";
+import { NonNullableInvoice, NonNullableOneCustomer, Product } from "@app/lib/definitions";
 
-const HtmlContent = () => {
+const HtmlContent = ({
+  invoice,
+  customer,
+  products,
+}: {
+  invoice: NonNullableInvoice;
+  customer: NonNullableOneCustomer;
+  products: Product[];
+}) => {
   return (
     <main className="pl-[2rem] pr-[2rem]">
       <div>
@@ -24,11 +32,11 @@ const HtmlContent = () => {
               <h2 className="font-bold text-xl text-center">To</h2>
               <p className="text-center">Customer name</p>
             </div>
-            <div className="flex flex-col gap-3 text-center">
+            <div className="flex flex-col gap-3 text-center ml-[-3rem]">
               <h2 className="font-bold text-xl text-center">Address</h2>
               <p className="text-center">address</p>
             </div>
-            <div className="flex flex-col gap-3 ">
+            <div className="flex flex-col gap-3 mr-[2rem]">
               <h2 className="font-bold text-xl text-center">Date</h2>
               <p className="text-center">date</p>
             </div>
@@ -71,6 +79,20 @@ const HtmlContent = () => {
         <div className="flex justify-between mt-10 px-[5rem] border-2 py-3 border-solid border-gray-900">
           <p className="text-xl font-bold">Total</p>
           <p className="text-xl font-bold">75</p>
+        </div>
+        <div className="mt-10 flex flex-col gap-8">
+          <div>
+            <h2 className="text-blue-700 font-bold">Terms and Conditions</h2>
+            <p>Payment due a month from reciept of this invoice</p>
+          </div>
+          <div>
+            <h2 className="text-blue-700 font-bold">Payment Instructions</h2>
+            <p>
+              Bank transfer to Jane Doe <br />
+              28046102393 <br />
+              Gold Safe Bank Plc.
+            </p>
+          </div>
         </div>
       </div>
     </main>

@@ -1,7 +1,7 @@
 import { sql } from "@vercel/postgres";
 import {
   CustomerField,
-  CompleteCustomers,
+  OneCustomer,
   CustomersTable,
   InvoiceForm,
   InvoicesTable,
@@ -298,15 +298,20 @@ export async function fetchCustomers() {
   }
 }
 
-export async function fetchCompleteCustomers() {
+export async function fetchCustomerById(id: string) {
   try {
-    const data = await sql<CompleteCustomers>`SELECT * FROM customers`
+    const data = await sql<OneCustomer>`
+      SELECT
+        customers.company,
+        customers.address
+      FROM customers
+      WHERE customers.id = ${id};
+    `;
 
-    const customers = data.rows;
-    return customers;
-  } catch (err) {
-    console.error("Database Error:", err);
-    throw new Error("Failed to fetch all customers.");
+    const customer = data.rows[0]
+    return customer
+  } catch (error) {
+    console.error("Database Error:", error);
   }
 }
 

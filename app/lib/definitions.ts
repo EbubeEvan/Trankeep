@@ -104,11 +104,7 @@ export type CustomerField = {
   name: string;
 };
 
-export type CompleteCustomers = {
-  id : string;
-  name : string;
-  email : string;
-  image_url : string;
+export type OneCustomer = {
   company : string;
   address : string;
 }
@@ -162,3 +158,6 @@ export interface InputSet {
   unit: string;
   price: string;
 }
+
+export type NonNullableInvoice = NonNullable<Invoice>;
+export type NonNullableOneCustomer = NonNullable<OneCustomer>;

@@ -3,10 +3,25 @@
 import { useState } from "react";
 import Image from "next/image";
 import { EyeIcon, ArrowDownIcon } from "@heroicons/react/24/outline";
+import { NonNullableInvoice, NonNullableOneCustomer, Product } from "@app/lib/definitions";
+import HtmlContent from "@app/dashboard/htmlContent/page";
+import { renderToString } from 'react-dom/server';
 
-const ViewForm = () => {
+const ViewForm = ({
+  invoice,
+  customer,
+  products,
+}: {
+  invoice: NonNullableInvoice;
+  customer: NonNullableOneCustomer;
+  products: Product[];
+}) => {
   const [pdfurl, setPdfUrl] = useState("a");
   const [generate, setGenerate] = useState(false);
+
+  const htmlContent = renderToString(
+        <HtmlContent invoice={invoice} customer={customer} products={products}/>
+      );
 
   return (
     <div>
@@ -20,14 +35,16 @@ const ViewForm = () => {
         </div>
       ) : (
         <div>
-          <div className="border border-gray-400 p-5 rounded-t-md flex justify-center">
+          <div className="border border-gray-400 p-5 rounded-t-md flex justify-center flex-col gap-2">
             <Image
               src="/pdf-icon.png"
               alt="pdf icon"
               width={150}
               height={150}
               priority={true}
+              className="md:ml-[25%]"
             />
+            <p className="text-center">Invoice number</p>
           </div>
           <div className="bg-blue-600 flex justify-between w-full h-full border-gray-400 rounded-b-md p-2">
             <EyeIcon width={30} className="text-white cursor-pointer " />
