@@ -1,21 +1,20 @@
 import "@/app/ui/global.css";
 import { inter } from "@app/ui/fonts";
-import { Metadata } from 'next';
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Trankeep',
-    default: 'Trankeep',
+    template: "%s | Trankeep",
+    default: "Trankeep",
   },
-  description: 'Book Keeping app.',
-  metadataBase: new URL('https://trankeep.vercel.app/'),
+  description: "Book Keeping app.",
+  metadataBase: new URL("https://trankeep.vercel.app/"),
 };
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
-      <body className={`${inter.className} antaliased`}>  {children}
-      </body>
+      <body className={`${inter.className} antaliased`}>{children}</body>
     </html>
   );
 };

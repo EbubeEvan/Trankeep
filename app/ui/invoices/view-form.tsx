@@ -1,71 +1,74 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
-import { EyeIcon, ArrowDownIcon } from "@heroicons/react/24/outline";
-import { NonNullableInvoice, NonNullableOneCustomer, Product } from "@app/lib/definitions";
-import HtmlContent from "@app/dashboard/htmlContent/page";
-import { renderToString } from 'react-dom/server';
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import {
+  NonNullableInvoice,
+  NonNullableOneCustomer,
+  Product,
+  User,
+} from "@app/lib/definitions";
+import InvoicePdfContent from "./InvoicePdfContent";
 
 const ViewForm = ({
   invoice,
   customer,
   products,
+  user,
 }: {
   invoice: NonNullableInvoice;
   customer: NonNullableOneCustomer;
   products: Product[];
+  user: User;
 }) => {
-  const [pdfurl, setPdfUrl] = useState("a");
-  const [generate, setGenerate] = useState(false);
+  const generatePDF = () => {
+    const input = document.getElementById("invoice-pdf-content");
 
-  const htmlContent = renderToString(
-        <HtmlContent invoice={invoice} customer={customer} products={products}/>
-      );
+    html2canvas(input!).then((canvas) => {
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgData = canvas.toDataURL("image/png");
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+      const url = pdf.output("datauristring");
+      
+      const downloadLink = document.createElement("a");
+      downloadLink.href = url;
+      downloadLink.download = `invoice_${invoice.id}`;
+      downloadLink.click();
+    });
+  };
 
   return (
     <div>
-      {!pdfurl ? (
-        <div>
-          <form action="">
-            <button className="rounded-md bg-blue-500 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-400">
-              {!generate ? "Generate invoice" : "Generating..."}
-            </button>
-          </form>
-        </div>
-      ) : (
-        <div>
-          <div className="border border-gray-400 p-5 rounded-t-md flex justify-center flex-col gap-2">
-            <Image
-              src="/pdf-icon.png"
-              alt="pdf icon"
-              width={150}
-              height={150}
-              priority={true}
-              className="md:ml-[25%]"
-            />
-            <p className="text-center">Invoice number</p>
-          </div>
-          <div className="bg-blue-600 flex justify-between w-full h-full border-gray-400 rounded-b-md p-2">
-            <EyeIcon width={30} className="text-white cursor-pointer " />
-            <ArrowDownIcon width={30} className="text-white cursor-pointer " />
-          </div>
-          <form
-            action=""
-            className="flex gap-x-[3rem] gap-y-[1.5rem] flex-col md:flex-row mt-5"
-          >
-            <button className="bg-blue-500 text-white p-3 rounded-md">
-              Send as Email
-            </button>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white p-3 rounded-md"
-            >
-              Generate reciept
-            </button>
-          </form>
-        </div>
-      )}
+      <div id="invoice-pdf-content">
+        <InvoicePdfContent
+          invoice={invoice as NonNullableInvoice}
+          customer={customer as NonNullableOneCustomer}
+          products={products as Product[]}
+          user={user}
+        />
+      </div>
+      <form
+        action=""
+        className="flex gap-x-[3rem] gap-y-[1.5rem] flex-col md:flex-row mt-10 mb-10 lg:ml-7"
+      >
+        <button
+          className="bg-blue-500 text-white p-3 rounded-md"
+          onClick={(e) => {
+            e.preventDefault();
+            generatePDF()
+          }}
+        >
+          Download invoice
+        </button>
+        <button className="bg-blue-500 text-white p-3 rounded-md">
+          Send as Email
+        </button>
+        <button className="bg-blue-500 text-white p-3 rounded-md">
+          Generate reciept
+        </button>
+      </form>
     </div>
   );
 };

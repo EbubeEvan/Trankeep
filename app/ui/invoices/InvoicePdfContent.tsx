@@ -1,44 +1,60 @@
-import { NonNullableInvoice, NonNullableOneCustomer, Product } from "@app/lib/definitions";
+import { NonNullableInvoice, NonNullableOneCustomer, Product, User } from "@app/lib/definitions";
+import { formatCurrency } from "@app/lib/utils";
 
-const HtmlContent = ({
+const InvoicePdfContent = ({
   invoice,
   customer,
   products,
+  user
 }: {
   invoice: NonNullableInvoice;
   customer: NonNullableOneCustomer;
   products: Product[];
+  user: User;
 }) => {
+  const unitPrice = (name : string) : number => {
+    const oneProduct = products.find((product) => product.name === name)
+    return oneProduct?.price!  
+  }
+
+  const totalPrice = invoice.items.reduce((acc, item) => {
+    const priceAsNumber = Number(item.price);
+    if (!isNaN(priceAsNumber)) {
+      acc += priceAsNumber;
+    }
+    return acc;
+  }, 0);
+
   return (
-    <main className="pl-[2rem] pr-[2rem]">
+    <main className="pl-[2rem] pr-[2rem] lg:mt-[23rem] ">
       <div>
         <h1 className="text-center text-4xl font-bold text-blue-700">
-          Company Name
+          {user.company}
         </h1>
-        <p className="text-center mt-5">Address</p>
+        <p className="text-center mt-5 mb-10">{user.address}</p>
         <div>
           <div className="flex justify-between">
             <div className="flex flex-col gap-3">
-              <h2 className="font-bold text-xl text-center">From</h2>
-              <p className="text-center">User name</p>
+              <p className="font-bold text-lg text-center">From</p>
+              <p className="text-center">{user.name}</p>
             </div>
             <div className="flex flex-col gap-3 text-center">
-              <h2 className="font-bold text-xl">Invoice</h2>
-              <p className="text-center">Invoice number</p>
+              <p className="font-bold text-lg">Invoice</p>
+              <p className="text-center max-w-[15rem]">{invoice.id}</p>
             </div>
           </div>
           <div className="flex justify-between mt-10">
             <div className="flex flex-col gap-3">
-              <h2 className="font-bold text-xl text-center">To</h2>
-              <p className="text-center">Customer name</p>
+              <p className="font-bold text-lg text-center">To</p>
+              <p className="text-center max-w-[10rem]">{customer?.company}</p>
             </div>
-            <div className="flex flex-col gap-3 text-center ml-[-3rem]">
-              <h2 className="font-bold text-xl text-center">Address</h2>
-              <p className="text-center">address</p>
+            <div className="flex flex-col gap-3 text-center">
+              <p className="font-bold text-lg text-center">Address</p>
+              <p className="text-center max-w-[10rem]">{customer?.address}</p>
             </div>
             <div className="flex flex-col gap-3 mr-[2rem]">
-              <h2 className="font-bold text-xl text-center">Date</h2>
-              <p className="text-center">date</p>
+              <p className="font-bold text-lg text-center">Date</p>
+              <p className="text-center">{new Date().toISOString().split("T")[0]}</p>
             </div>
           </div>
         </div>
@@ -60,34 +76,38 @@ const HtmlContent = ({
             </tr>
           </thead>
           <tbody>
-            <tr>
+            {
+              invoice.items.map((item, index) => (
+                <tr key={index}>
               <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center">
-                1
+                {item.unit}
               </td>
               <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center">
-                Clofenac
+                {item.name}
               </td>
               <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center">
-                75
+                {formatCurrency(Number(unitPrice(item.name)))}
               </td>
               <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center">
-                75
+                {formatCurrency(Number(item.price))}
               </td>
             </tr>
+              ))
+            }
           </tbody>
         </table>
         <div className="flex justify-between mt-10 px-[5rem] border-2 py-3 border-solid border-gray-900">
-          <p className="text-xl font-bold">Total</p>
-          <p className="text-xl font-bold">75</p>
+          <p className="text-lg font-bold">Total</p>
+          <p className="text-lg font-bold">{formatCurrency(Number(totalPrice))}</p>
         </div>
-        <div className="mt-10 flex flex-col gap-8">
+        <div className="mt-10 flex gap-[10rem]">
           <div>
-            <h2 className="text-blue-700 font-bold">Terms and Conditions</h2>
-            <p>Payment due a month from reciept of this invoice</p>
+            <p className="text-blue-700 font-bold">Terms and Conditions</p>
+            <p className="max-w-[10rem]">Payment due a month from reciept of this invoice</p>
           </div>
           <div>
-            <h2 className="text-blue-700 font-bold">Payment Instructions</h2>
-            <p>
+            <p className="text-blue-700 font-bold">Payment Instructions</p>
+            <p className="mb-5">
               Bank transfer to Jane Doe <br />
               28046102393 <br />
               Gold Safe Bank Plc.
@@ -99,4 +119,4 @@ const HtmlContent = ({
   );
 };
 
-export default HtmlContent;
+export default InvoicePdfContent;
