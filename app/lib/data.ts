@@ -302,6 +302,7 @@ export async function fetchCustomerById(id: string) {
   try {
     const data = await sql<OneCustomer>`
       SELECT
+        customers.name,
         customers.company,
         customers.address
       FROM customers

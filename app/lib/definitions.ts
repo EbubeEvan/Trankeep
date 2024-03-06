@@ -105,6 +105,7 @@ export type CustomerField = {
 };
 
 export type OneCustomer = {
+  name : string,
   company : string;
   address : string;
 }

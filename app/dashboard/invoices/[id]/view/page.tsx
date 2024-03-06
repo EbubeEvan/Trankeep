@@ -26,7 +26,7 @@ const page = async ({ params }: { params: { id: string } }) => {
   const user = await getUser(session?.user?.email!);
 
   return (
-    <main className="flex h-full flex-col items-center justify-center">
+    <main className="flex h-full flex-col items-center justify-center ">
       <ViewForm
         invoice={invoice as NonNullableInvoice}
         customer={customer as NonNullableOneCustomer}

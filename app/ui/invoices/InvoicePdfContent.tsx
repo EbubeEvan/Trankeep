@@ -17,7 +17,7 @@ const InvoicePdfContent = ({
     return oneProduct?.price!  
   }
 
-  const totalPrice = invoice.items.reduce((acc, item) => {
+  const totalPrice = invoice?.items?.reduce((acc, item) => {
     const priceAsNumber = Number(item.price);
     if (!isNaN(priceAsNumber)) {
       acc += priceAsNumber;
@@ -40,12 +40,13 @@ const InvoicePdfContent = ({
             </div>
             <div className="flex flex-col gap-3 text-center">
               <p className="font-bold text-lg">Invoice</p>
-              <p className="text-center max-w-[15rem]">{invoice.id}</p>
+              <p className="text-center max-w-[15rem]">{invoice?.id}</p>
             </div>
           </div>
           <div className="flex justify-between mt-10">
             <div className="flex flex-col gap-3">
               <p className="font-bold text-lg text-center">To</p>
+              <p className="text-center max-w-[10rem] mb-[-0.5rem]">{customer?.name}</p>
               <p className="text-center max-w-[10rem]">{customer?.company}</p>
             </div>
             <div className="flex flex-col gap-3 text-center">
@@ -58,7 +59,7 @@ const InvoicePdfContent = ({
             </div>
           </div>
         </div>
-        <table className="min-w-full border border-solid border-gray-900 mt-10 pl-[5rem]">
+        <table className="min-w-full border border-solid border-gray-900 mt-10">
           <thead className="rounded-lg text-left text-sm font-normal">
             <tr className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
               <th scope="col" className="px-4 py-5 font-bold text-center">
@@ -77,7 +78,7 @@ const InvoicePdfContent = ({
           </thead>
           <tbody>
             {
-              invoice.items.map((item, index) => (
+              invoice?.items?.map((item, index) => (
                 <tr key={index}>
               <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center">
                 {item.unit}
