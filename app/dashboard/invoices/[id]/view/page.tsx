@@ -23,16 +23,17 @@ const page = async ({ params }: { params: { id: string } }) => {
   const API_KEY = process.env.ONEDOC_API_KEY!
 
   const id = params.id;
-  const [invoice, products] = await Promise.all([
+  
+  const [invoice, products, session] = await Promise.all([
     fetchInvoiceById(id),
     fetchProducts(),
+    auth()
   ]);
 
-  const customer = await fetchCustomerById(invoice?.customer_id!)
-
-  const session = await auth();
-
-  const user = await getUser(session?.user?.email!);
+  const [customer, user] = await Promise.all([
+    fetchCustomerById(invoice?.customer_id!),
+    getUser(session?.user?.email!)
+  ])
 
   const onedoc = new Onedoc(API_KEY);
 
