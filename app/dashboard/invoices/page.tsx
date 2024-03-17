@@ -1,9 +1,9 @@
 import Pagination from '@/app/ui/invoices/pagination';
-import Search from '@/app/ui/search';
+import Search from '@app/ui/common/search';
 import Table from '@/app/ui/invoices/table';
 import { CreateInvoice } from '@/app/ui/invoices/buttons';
-import { lusitana } from '@/app/ui/fonts';
-import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
+import { lusitana } from '@app/ui/common/fonts';
+import { InvoicesTableSkeleton } from '@app/ui/common/skeletons';
 import { fetchInvoicesPages } from '@app/lib/data';
 import { Suspense } from 'react';
 import { Metadata } from 'next';

@@ -1,6 +1,6 @@
 "use client";
 
-import { lusitana } from "@/app/ui/fonts";
+import { lusitana } from "@app/ui/common/fonts";
 import {
   UserCircleIcon ,
   AtSymbolIcon,
@@ -10,7 +10,7 @@ import {
   BuildingOffice2Icon
 } from "@heroicons/react/24/outline";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import { Button } from "./button";
+import { Button } from "../common/button";
 import { useFormState, useFormStatus } from "react-dom";
 import { register } from "@app/lib/actions";
 

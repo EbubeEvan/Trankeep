@@ -26,7 +26,7 @@ const InvoicePdfContent = ({
   }, 0);
 
   return (
-    <main className="pl-[2rem] pr-[2rem] lg:mt-[23rem] ">
+    <main className="pl-[2rem] pr-[2rem] lg:mt-[23rem]">
       <div>
         <h1 className="text-center text-4xl font-bold text-blue-700">
           {user.company}
@@ -59,7 +59,7 @@ const InvoicePdfContent = ({
             </div>
           </div>
         </div>
-        <table className="min-w-full border border-solid border-gray-900 mt-10">
+        <table className="w-full border border-solid border-gray-900 mt-10">
           <thead className="rounded-lg text-left text-sm font-normal">
             <tr className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
               <th scope="col" className="px-4 py-5 font-bold text-center">
@@ -80,16 +80,16 @@ const InvoicePdfContent = ({
             {
               invoice?.items?.map((item, index) => (
                 <tr key={index}>
-              <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center">
+              <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center text-sm">
                 {item.unit}
               </td>
-              <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center">
+              <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center text-sm">
                 {item.name}
               </td>
-              <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center">
+              <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center text-sm">
                 {formatCurrency(Number(unitPrice(item.name)))}
               </td>
-              <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center">
+              <td className="whitespace-nowrap py-3 pl-6 pr-3 text-center text-sm">
                 {formatCurrency(Number(item.price))}
               </td>
             </tr>
@@ -101,7 +101,7 @@ const InvoicePdfContent = ({
           <p className="text-lg font-bold">Total</p>
           <p className="text-lg font-bold">{formatCurrency(Number(totalPrice))}</p>
         </div>
-        <div className="mt-10 flex gap-[10rem]">
+        <div className="mt-10 flex justify-between">
           <div>
             <p className="text-blue-700 font-bold">Terms and Conditions</p>
             <p className="max-w-[10rem]">Payment due a month from reciept of this invoice</p>

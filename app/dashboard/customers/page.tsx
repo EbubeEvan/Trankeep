@@ -1,6 +1,6 @@
 import Pagination from '@/app/ui/invoices/pagination';
 import CustomersTable from '@app/ui/customers/table';
-import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
+import { InvoicesTableSkeleton } from '@app/ui/common/skeletons';
 import { fetchCustomersPages } from '@app/lib/data';
 import { Suspense } from 'react';
 import { Metadata } from 'next';

@@ -1,5 +1,5 @@
-import AcmeLogo from '@/app/ui/acme-logo';
-import SignInForm from '@app/ui/siginIn-form';
+import AcmeLogo from '@app/ui/common/acme-logo';
+import SignInForm from '@app/ui/signin/siginIn-form';
  
  const SignInPage = () =>{
   return (

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
-import { Button } from "@app/ui/button";
+import { Button } from "@app/ui/common/button";
 import { addCustomer } from "@app/lib/actions";
 import { useFormState, useFormStatus } from "react-dom";
 import { useState, ChangeEvent } from "react";

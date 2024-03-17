@@ -3,7 +3,7 @@
 import { PlusIcon, CurrencyDollarIcon } from "@heroicons/react/24/outline";
 import { addProduct } from "@app/lib/actions";
 import { useFormState, useFormStatus } from "react-dom";
-import { Button } from "../button";
+import { Button } from "../common/button";
 
 const NewProductForm = () => {
   const initialState = { message: null, errors: {} };

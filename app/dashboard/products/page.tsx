@@ -1,11 +1,11 @@
-import { lusitana } from "@/app/ui/fonts";
+import { lusitana } from "@app/ui/common/fonts";
 import NewProductForm from "@app/ui/products/new-productform";
 import ProductTable from "@app/ui/products/product-table";
-import Search from "@app/ui/search";
+import Search from "@app/ui/common/search";
 import { fetchProductsPages } from "@app/lib/data";
 import Pagination from "@app/ui/invoices/pagination";
 import { Suspense } from "react";
-import { InvoicesTableSkeleton } from "@/app/ui/skeletons";
+import { InvoicesTableSkeleton } from "@app/ui/common/skeletons";
 import { Metadata } from 'next';
 
 export const dynamic = "force-dynamic";
