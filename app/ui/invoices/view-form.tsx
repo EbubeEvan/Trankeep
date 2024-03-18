@@ -41,6 +41,8 @@ const ViewForm = ({
       
     } catch (error) {
       console.log(error);
+    } finally {
+      setFetchConfig({ ...fetchConfig, loading: false });
     }
   };
 
