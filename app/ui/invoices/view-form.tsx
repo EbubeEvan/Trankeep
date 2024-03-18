@@ -2,36 +2,80 @@
 
 import {
   NonNullableInvoice,
+  NonNullableOneCustomer,
+  Product,
+  User,
 } from "@app/lib/definitions";
+import { useState } from "react";
 
 const ViewForm = ({
-  link,
-  invoice
+  invoice,
+  customer,
+  products,
+  user,
 }: {
-  link: string,
-  invoice: NonNullableInvoice
+  invoice: NonNullableInvoice;
+  customer: NonNullableOneCustomer;
+  products: Product[];
+  user: User;
 }) => {
+  const [fetchConfig, setFetchConfig] = useState({
+    url: "",
+    loading: false,
+    error: null,
+  });
+
+  const generatePdf = async () => {
+    setFetchConfig({ ...fetchConfig, loading: true });
+    try {
+      const response = await fetch("/api/generatepdf", {
+        method: "POST",
+        body: JSON.stringify({ invoice, customer, products, user }),
+      });
+
+      const data: string = await response.json();
+      console.log(data);
+      
+      setFetchConfig({ ...fetchConfig, url: data});
+      console.log('urlstate:', fetchConfig.url);
+      
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
-      <form
-        action=""
-        className="flex gap-x-[3rem] gap-y-[1.5rem] flex-col justify-center md:flex-row mt-10 mb-10"
-      >
-        <a
+      {!fetchConfig.url ? (
+        <button
           className="bg-blue-500 text-white p-3 rounded-md"
-          href={link}
-          download={`invoice_${invoice.id}`}
+          onClick={(e) => {
+            e.preventDefault();
+            generatePdf();
+          }}
         >
-          Download invoice
-        </a>
-        <button className="bg-blue-500 text-white p-3 rounded-md">
-          Send as Email
+          {fetchConfig.loading ? "Generating..." : "Generate invoice"}
         </button>
-        <button className="bg-blue-500 text-white p-3 rounded-md">
-          Generate reciept
-        </button>
-      </form>
+      ) : (
+        <form
+          action=""
+          className="flex gap-x-[3rem] gap-y-[1.5rem] flex-col justify-center md:flex-row mt-10 mb-10"
+        >
+          <a
+            className="bg-blue-500 text-white p-3 rounded-md"
+            href={fetchConfig.url}
+            download={`invoice_${invoice.id}`}
+          >
+            Download invoice
+          </a>
+          <button className="bg-blue-500 text-white p-3 rounded-md">
+            Send as Email
+          </button>
+          <button className="bg-blue-500 text-white p-3 rounded-md">
+            Generate reciept
+          </button>
+        </form>
+      )}
     </>
   );
 };
