@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "npx tailwindcss install && next build",
     "dev": "next dev",
     "start": "next start",
     "seed": "node -r dotenv/config ./scripts/seed.js",
