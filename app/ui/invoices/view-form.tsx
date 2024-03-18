@@ -33,16 +33,16 @@ const ViewForm = ({
         body: JSON.stringify({ invoice, customer, products, user }),
       });
 
-      const data: string = await response.json();
-      console.log(data);
+      const link: string = await response.json();
+      console.log(link);
       
-      setFetchConfig({ ...fetchConfig, url: data});
-      console.log('urlstate:', fetchConfig.url);
+      setFetchConfig((fetchConfig) => ({ ...fetchConfig, url: link }));
+      console.log('urlstate:', fetchConfig.url);``
       
     } catch (error) {
       console.log(error);
     } finally {
-      setFetchConfig({ ...fetchConfig, loading: false });
+      setFetchConfig((fetchConfig) => ({ ...fetchConfig, loading: false }));
     }
   };
 

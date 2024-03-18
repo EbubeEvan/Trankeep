@@ -59,7 +59,7 @@ export const POST = async (request: Request) => {
     }
     console.log(link);
     
-    return new Response(JSON.stringify(link), { status: 200 });
+    return new Response(JSON.stringify(link), { status: 201 });
   } catch (error) {
     console.error(error)
     return new Response(JSON.stringify(`failed to generate pdf: ${error}`), { status: 500 });
