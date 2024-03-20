@@ -6,11 +6,14 @@ import {
 } from "@app/lib/definitions";
 import { Onedoc } from "@onedoc/client";
 import { compile } from "@onedoc/react-print";
-import InvoicePdfContent from "@app/ui/invoices/InvoicePdfContent";
-import postcss from "postcss";
-import tailwindcss from "tailwindcss";
-import postcssColorFunctionalNotation from "postcss-color-functional-notation";
+import InvoiceHtml from "@app/ui/invoices/invoicehtml";
+// import InvoicePdfContent from "@app/ui/invoices/InvoicePdfContent";
+// import postcss from "postcss";
+// import tailwindcss from "tailwindcss";
+// import postcssColorFunctionalNotation from "postcss-color-functional-notation";
 import React from "react";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 export const POST = async (request: Request) => {
   const { invoice, customer, products, user } = await request.json();
@@ -21,7 +24,7 @@ export const POST = async (request: Request) => {
     const onedoc = new Onedoc(API_KEY);
 
     const html = await compile(
-      React.createElement(InvoicePdfContent, {
+      React.createElement(InvoiceHtml, {
         invoice: invoice as NonNullableInvoice,
         customer: customer as NonNullableOneCustomer,
         products: products as Product[],
@@ -29,14 +32,14 @@ export const POST = async (request: Request) => {
       })
     );
 
-    const css = await postcss([
-      tailwindcss({
-        content: [{ raw: html, extension: "html" }],
-      }),
-      postcssColorFunctionalNotation,
-    ]).process(`@tailwind base;@tailwind components;@tailwind utilities;`, {
-      from: undefined,
-    }); // loads compiled tailwind styles
+    // const css = await postcss([
+    //   tailwindcss({
+    //     content: [{ raw: html, extension: "html" }],
+    //   }),
+    //   postcssColorFunctionalNotation,
+    // ]).process(`@tailwind base;@tailwind components;@tailwind utilities;`, {
+    //   from: undefined,
+    // }); // loads compiled tailwind styles
 
     let doc = {
       html: html,
@@ -46,8 +49,8 @@ export const POST = async (request: Request) => {
       expiresIn: 30, // the number of day you want to host your document
       assets: [
         {
-          path: "./global.css",
-          content: css.toString(),
+          path: "./invoice.css",
+          content: readFileSync(join(process.cwd(), "invoice.css")).toString(),
         },
       ],
     };
