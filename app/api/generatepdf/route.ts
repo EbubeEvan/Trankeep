@@ -46,7 +46,7 @@ export const POST = async (request: Request) => {
       title: `invoice_${invoice?.id}`,
       test: false, // if true, produce a PDF in test mode with a Onedoc's watermark
       save: true, // if true, host the document and provide a download link in the console and your Onedoc's dashboard
-      expiresIn: 30, // the number of day you want to host your document
+      expiresIn: 0, // the number of day you want to host your document
       assets: [
         {
           path: "./invoice.css",

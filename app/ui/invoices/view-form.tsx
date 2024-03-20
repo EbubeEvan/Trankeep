@@ -39,8 +39,8 @@ const ViewForm = ({
       setFetchConfig((fetchConfig) => ({ ...fetchConfig, url: link }));
       console.log('urlstate:', fetchConfig.url);``
       
-    } catch (error) {
-      console.log(error);
+    } catch (error : any) {
+      console.log(error.json());
     } finally {
       setFetchConfig((fetchConfig) => ({ ...fetchConfig, loading: false }));
     }

@@ -81,7 +81,7 @@ const InvoiceHtml = ({
             </table>
             <div className="total-section">
                 <p className="total-label">Total</p>
-                <p className="total-amount">{Number(totalPrice)}</p>
+                <p className="total-amount">{formatCurrency(Number(totalPrice))}</p>
             </div>
             <div className="terms-section">
                 <div className="terms-info">
