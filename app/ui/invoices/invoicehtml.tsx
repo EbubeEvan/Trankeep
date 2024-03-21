@@ -100,4 +100,6 @@ const InvoiceHtml = forwardRef((
   );
 });
 
+InvoiceHtml.displayName = "InvoiceHtml";
+
 export default InvoiceHtml;
