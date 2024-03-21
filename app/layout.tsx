@@ -1,4 +1,4 @@
-import "@/global.css";
+import "@/app/ui/common/global.css";
 import { inter } from "@app/ui/common/fonts";
 import { Metadata } from "next";
 

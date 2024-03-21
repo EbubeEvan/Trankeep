@@ -9,7 +9,7 @@ import {
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import InvoiceHtml from "@app/ui/invoices/invoicehtml";
-import "@/invoice.css";
+import "@/app/ui/invoices/invoice.css";
 
 const ViewForm = ({
   invoice,
@@ -22,37 +22,11 @@ const ViewForm = ({
   products: Product[];
   user: User;
 }) => {
-  // const [fetchConfig, setFetchConfig] = useState({
-  //   url: "",
-  //   loading: false,
-  //   error: null,
-  // });
-
-  // const generatePdf = async () => {
-  //   setFetchConfig({ ...fetchConfig, loading: true });
-  //   try {
-  //     const response = await fetch("/api/generatepdf", {
-  //       method: "POST",
-  //       body: JSON.stringify({ invoice, customer, products, user }),
-  //     });
-
-  //     const link: string = await response.json();
-  //     console.log(link);
-
-  //     setFetchConfig((fetchConfig) => ({ ...fetchConfig, url: link }));
-  //     console.log('urlstate:', fetchConfig.url);``
-
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     setFetchConfig((fetchConfig) => ({ ...fetchConfig, loading: false }));
-  //   }
-  // };
-
   const pdfRef = useRef<any>();
 
   const handlePrint = useReactToPrint({
     content: () => pdfRef.current!,
+    documentTitle: `invoice_${invoice.id}`
   });
 
   return (
