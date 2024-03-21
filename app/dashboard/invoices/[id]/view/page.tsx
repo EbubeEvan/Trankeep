@@ -11,12 +11,12 @@ import {
 } from "@app/lib/definitions";
 import { auth } from "@auth";
 import { getUser } from "@app/lib/data";
-import { Onedoc } from "@onedoc/client";
-import { compile } from "@onedoc/react-print";
-import InvoicePdfContent from "@app/ui/invoices/InvoicePdfContent";
-import postcss from "postcss";
-import tailwindcss from "tailwindcss";
-import postcssColorFunctionalNotation from "postcss-color-functional-notation";
+// import { Onedoc } from "@onedoc/client";
+// import { compile } from "@onedoc/react-print";
+// import InvoicePdfContent from "@app/ui/invoices/InvoicePdfContent";
+// import postcss from "postcss";
+// import tailwindcss from "tailwindcss";
+// import postcssColorFunctionalNotation from "postcss-color-functional-notation";
 
 
 const page = async ({ params }: { params: { id: string } }) => {
