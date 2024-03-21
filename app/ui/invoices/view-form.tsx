@@ -42,7 +42,7 @@ const ViewForm = ({
       </div>
       <form
         action=""
-        className="flex gap-x-[3rem] gap-y-[1.5rem] flex-col justify-center md:flex-row mt-10 mb-10"
+        className="flex gap-x-[3rem] justify-center mt-10 mb-10"
       >
         <button className="bg-blue-500 text-white p-3 rounded-md" onClick={(e) => {
           e.preventDefault()
