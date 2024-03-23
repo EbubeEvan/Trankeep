@@ -31,8 +31,6 @@ const EditInvoiceForm = ({
     price: 0,
   });
 
-  console.log(typeof invoice.items, invoice.items);
-
   const handleInputChange = (
     index: number,
     field: keyof InputSet,
@@ -64,7 +62,6 @@ const EditInvoiceForm = ({
       } else {
         updatedSets[index].price = foundProduct.price.toString();
       }
-      console.log("updatedSets[index].price", updatedSets[index].price);
     } else {
       updatedSets[index][field] = value;
     }
@@ -75,8 +72,6 @@ const EditInvoiceForm = ({
   const handleAddSet = () => {
     setInputSets([...inputSets, { name: "", unit: "", price: "" }]);
   };
-
-  console.log("inputSets", inputSets);
 
   const handleRemoveSet = (index: number) => {
     const updatedSets = [...inputSets];
@@ -91,10 +86,8 @@ const EditInvoiceForm = ({
     }
     return acc;
   }, 0);
-  console.log("totalPrice", totalPrice);
 
   const productData: [InputSet[], number] = [inputSets, totalPrice];
-  console.log("productData", productData);
 
   const initialState = { message: null, errors: {} };
   const updateInvoiceWithId = updateInvoice.bind(null, invoice.id, productData);
@@ -184,7 +177,7 @@ const EditInvoiceForm = ({
               {inputSets.length > 1 && (
                 <button
                   type="button"
-                  className="bg-red-500 text-slate-100 rounded-md px-3"
+                  className="bg-red-500 text-slate-100 rounded-md px-3 py-2"
                   onClick={() => handleRemoveSet(index)}
                 >
                   Remove
@@ -208,7 +201,7 @@ const EditInvoiceForm = ({
             type="number"
             readOnly
             className="peer block w-[10rem] rounded-md border border-gray-200 py-2 pl-10 mt-2 text-sm outline-2 placeholder:text-gray-500"
-            defaultValue={totalPrice / 100}
+            value={totalPrice / 100}
           />
           <CurrencyDollarIcon className="relative top-[-1.2rem] left-[0.8rem] h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
         </div>

@@ -205,7 +205,7 @@ const Form = ({
             type="number"
             readOnly
             className="peer block w-[10rem] rounded-md border border-gray-200 py-2 pl-10 mt-2 text-sm outline-2 placeholder:text-gray-500"
-            defaultValue={totalPrice / 100}
+            value={totalPrice / 100}
           />
           <CurrencyDollarIcon className="relative top-[-1.2rem] left-[0.8rem] h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900"/>
         </div>
