@@ -14,7 +14,7 @@ import { Button } from "../common/button";
 import { useFormState, useFormStatus } from "react-dom";
 import { register } from "@app/lib/actions";
 
-const SignInForm = () => {
+const SignUpForm = () => {
   const initialState = { message: null, errors: {} };
   const [state, dispatch] = useFormState(register, initialState);
 
@@ -153,4 +153,4 @@ function SignInButton() {
   );
 }
 
-export default SignInForm;
+export default SignUpForm;

@@ -5,7 +5,8 @@ import {
   CustomerState,
   ProductState,
   RegisterState,
-  InputSet
+  InputSet,
+  Invoice,
 } from "./definitions";
 import { z } from "zod";
 import { sql } from "@vercel/postgres";
@@ -21,16 +22,13 @@ const inputSetSchema = z.object({
   name: z.string({
     invalid_type_error: "Please select a product.",
   }),
-  unit: z.coerce.number().min(1, {message : "Please select an unit number."}),
+  unit: z.coerce.number().min(1, { message: "Please select an unit number." }),
   price: z.coerce.number(),
 });
 
 const InputschemaArray = z.array(inputSetSchema);
 
-const CompleteInputSchema = z.tuple([
-  (InputschemaArray),
-  z.coerce.number(),
-]);
+const CompleteInputSchema = z.tuple([InputschemaArray, z.coerce.number()]);
 
 const FormSchema = z.object({
   id: z.string(),
@@ -48,7 +46,7 @@ const UpdateInvoice = FormSchema.omit({ date: true, id: true });
 
 // create invoice
 export const createInvoice = async (
-  productData: [InputSet[] , number],
+  productData: [InputSet[], number],
   prevState: InvoiceState,
   formData: FormData
 ) => {
@@ -58,13 +56,24 @@ export const createInvoice = async (
     status: formData.get("status"),
   });
 
-  console.log(validatedFields.success ? "Validation passed" : validatedFields.error.flatten());
+  console.log(
+    validatedFields.success
+      ? "Validation passed"
+      : validatedFields.error.flatten()
+  );
 
   const [inputSets, totalPrice] = productData;
 
-  const validatedProductFields = CompleteInputSchema.safeParse([inputSets, totalPrice]);
+  const validatedProductFields = CompleteInputSchema.safeParse([
+    inputSets,
+    totalPrice,
+  ]);
 
-  console.log(validatedProductFields.success ? "Product validation passed" : validatedProductFields.error.flatten());
+  console.log(
+    validatedProductFields.success
+      ? "Product validation passed"
+      : validatedProductFields.error.flatten()
+  );
 
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success || !validatedProductFields.success) {
@@ -98,10 +107,9 @@ export const createInvoice = async (
       INSERT INTO invoices (customer_id, status, date, total, items)
       VALUES ( ${customerId}, ${status}, ${date}, ${total}, ${jsonItems} )
     `;
-    console.log('invoice added');
-    
+    console.log("invoice added");
   } catch (error) {
-    // If a database error occurs, return a more specific error.
+    console.log(error);
     return {
       message: "Database Error: Failed to Create Invoice.",
     };
@@ -115,7 +123,7 @@ export const createInvoice = async (
 // update invoice
 export const updateInvoice = async (
   id: string,
-  productData: [InputSet[] , number],
+  productData: [InputSet[], number],
   prevState: InvoiceState,
   formData: FormData
 ) => {
@@ -125,13 +133,24 @@ export const updateInvoice = async (
     status: formData.get("status"),
   });
 
-  console.log(validatedFields.success ? "Validation passed" : validatedFields.error.flatten());
+  console.log(
+    validatedFields.success
+      ? "Validation passed"
+      : validatedFields.error.flatten()
+  );
 
   const [inputSets, totalPrice] = productData;
 
-  const validatedProductFields = CompleteInputSchema.safeParse([inputSets, totalPrice]);
+  const validatedProductFields = CompleteInputSchema.safeParse([
+    inputSets,
+    totalPrice,
+  ]);
 
-  console.log(validatedProductFields.success ? "Product validation passed" : validatedProductFields.error.flatten());
+  console.log(
+    validatedProductFields.success
+      ? "Product validation passed"
+      : validatedProductFields.error.flatten()
+  );
 
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success || !validatedProductFields.success) {
@@ -160,7 +179,6 @@ export const updateInvoice = async (
   const jsonItems = JSON.stringify(items);
 
   // Insert data into the database
-
   try {
     await sql`
       UPDATE invoices
@@ -168,30 +186,67 @@ export const updateInvoice = async (
       WHERE id = ${id}
     `;
   } catch (error) {
+    console.log(error);
     return { message: "Database Error: Failed to Update Invoice." };
   }
 
-  revalidatePath(`/dashboard/invoices/${id}/edit`)
+  revalidatePath(`/dashboard/invoices/${id}/edit`);
   revalidatePath("/dashboard/invoices");
   redirect("/dashboard/invoices");
 };
 
 //delete invoice
 export const deleteInvoice = async (id: string) => {
-  // throw new Error('Failed to Delete Invoice');
-
   try {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
     revalidatePath("/dashboard/invoices");
     return { message: "Deleted Invoice" };
   } catch (error) {
+    console.log(error);
     return { message: "Database Error: Failed to Delete Invoice." };
+  }
+};
+
+//Add reciept
+export const addReciept = async (invoice: Invoice) => {
+  const { customer_id, items, total } = invoice;
+
+  const date = new Date().toISOString().split("T")[0];
+
+  const jsonItems = JSON.stringify(items);
+
+  const totalIncents = total * 100
+
+  try {
+    const version_id = uuidv4(); // to keep each reciept unique upon regenration so it can enter the table
+    await sql`
+      INSERT INTO reciepts (customer_id, date, items, total, version_id)
+      VALUES (${customer_id}, ${date}, ${jsonItems}, ${totalIncents}, ${version_id})`;
+      console.log('reciept added');
+  } catch (error) {
+    console.log(error);
+    return {
+      message: "Database Error: Failed to Add Customer.",
+    };
+  }
+  revalidatePath("/dashboard/reciepts");
+  redirect("/dashboard/reciepts");
+};
+
+//delete Receiept
+export const deleteReciept = async (id: string) => {
+  try {
+    await sql`DELETE FROM reciepts WHERE id = ${id}`;
+    revalidatePath("/dashboard/reciepts");
+    console.log('reciept deleted');
+  } catch (error) {
+    console.log(error);
+    return { message: "Database Error: Failed to Delete reciept." };
   }
 };
 
 //Add customer
 export const addCustomer = async (
-  image_url: string,
   prevState: CustomerState,
   formData: FormData
 ) => {
@@ -199,6 +254,8 @@ export const addCustomer = async (
     .object({
       name: z.string(),
       email: z.string().email(),
+      company: z.string(),
+      address: z.string(),
     })
     .safeParse(Object.fromEntries(formData.entries()));
 
@@ -209,40 +266,72 @@ export const addCustomer = async (
     };
   }
 
-  const { name, email } = validatedFields.data;
-
-  let savedImageUrl = "/customers/profile.png"; // Default URL
-
-  // Add image to customers folder
-  if (image_url) {
-    const dataUrlParts = image_url.split(";base64,");
-    if (dataUrlParts.length === 2) {
-      const imageBuffer = Buffer.from(dataUrlParts[1], "base64");
-
-      const uploadFolderPath = path.join(process.cwd(), "/public/customers");
-      const customerName = name.split(" ");
-      const fileName = `${customerName[0]}-${customerName[1]}.png`;
-      const filePath = path.join(uploadFolderPath, fileName);
-
-      // Save the file to customers folder
-      fs.writeFileSync(filePath, imageBuffer);
-
-      savedImageUrl = `/customers/${fileName}`;
-    }
-  }
+  const { name, email, company, address } = validatedFields.data;
 
   try {
     const id = uuidv4();
     await sql`
-      INSERT INTO customers (id, name, email, image_url)
-      VALUES (${id}, ${name}, ${email}, ${savedImageUrl})`;
+      INSERT INTO customers (id, name, email, company, address)
+      VALUES (${id}, ${name}, ${email}, ${company}, ${address} )`;
   } catch (error) {
+    console.log(error);
     return {
       message: "Database Error: Failed to Add Customer.",
     };
   }
   revalidatePath("/dashboard/customers");
   redirect("/dashboard/customers");
+};
+
+//Update Customer
+export const UpdateCustomer = async (
+  id : string,
+  prevState: CustomerState,
+  formData: FormData
+) => {
+  const validatedFields = z
+    .object({
+      name: z.string(),
+      email: z.string().email(),
+      company: z.string(),
+      address: z.string(),
+    })
+    .safeParse(Object.fromEntries(formData.entries()));
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to register.",
+    };
+  }
+
+  const { name, email, company, address } = validatedFields.data;
+
+  try {
+    await sql`
+    UPDATE customers
+    SET name = ${name}, email = ${email}, company = ${company}, address = ${address}
+    WHERE id = ${id}`;
+  } catch (error) {
+    console.log(error);
+    return {
+      message: "Database Error: Failed to Add Customer.",
+    };
+  }
+  revalidatePath("/dashboard/customers");
+  redirect("/dashboard/customers");
+};
+
+// Delete Customer
+export const deleteCustomer = async (id: string) => {
+  try {
+    await sql`DELETE FROM customers WHERE id = ${id}`;
+    revalidatePath("/dashboard/customers");
+    console.log("Deleted customer");
+  } catch (error) {
+    console.log(error);
+    return { message: "Database Error: Failed to Delete Customer." };
+  }
 };
 
 // Add Product
@@ -282,6 +371,7 @@ export const addProduct = async (
       message: "Product sucessfully added",
     };
   } catch (error) {
+    console.log(error);
     return {
       message: "Database Error: Failed to add product.",
     };
@@ -295,6 +385,7 @@ export const deleteProduct = async (id: string) => {
     revalidatePath("/dashboard/products");
     return { message: "Deleted Product" };
   } catch (error) {
+    console.log(error);
     return { message: "Database Error: Failed to Delete Product." };
   }
 };
@@ -331,6 +422,7 @@ export const register = async (
       INSERT INTO users (id, name, email, password, company, address)
       VALUES (${userId}, ${name}, ${email}, ${hashedPassword}, ${company}, ${address})`;
   } catch (error) {
+    console.log(error);
     return {
       message: "Database Error: Failed to register.",
     };
@@ -347,6 +439,7 @@ export const authenticate = async (
   try {
     await signIn("credentials", Object.fromEntries(formData.entries()));
   } catch (error) {
+    console.log(error);
     if ((error as Error).message.includes("CredentialsSignin")) {
       return "CredentialsSignin";
     }

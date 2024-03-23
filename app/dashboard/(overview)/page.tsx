@@ -5,6 +5,8 @@ import { lusitana } from '@app/ui/common/fonts';
 import { Suspense } from 'react';
 import { RevenueChartSkeleton, LatestInvoicesSkeleton, CardsSkeleton } from '@app/ui/common/skeletons';
 
+export const dynamic = "force-dynamic";
+
 const page = async () => {
   return (
     <main>

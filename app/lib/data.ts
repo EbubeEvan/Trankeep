@@ -9,7 +9,8 @@ import {
   LatestInvoiceRaw,
   User,
   Revenue,
-  Product
+  Product,
+  Reciept
 } from "./definitions";
 import { formatCurrency } from "./utils";
 
@@ -29,7 +30,7 @@ export async function fetchRevenue() {
 export async function fetchLatestInvoices() {
   try {
     const data = await sql<LatestInvoiceRaw>`
-      SELECT invoices.total, customers.name, customers.image_url, customers.email, invoices.id
+      SELECT invoices.total, customers.name, customers.email, invoices.id
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
       ORDER BY invoices.date DESC
@@ -94,8 +95,7 @@ export async function fetchFilteredInvoices(
         invoices.date,
         invoices.status,
         customers.name,
-        customers.email,
-        customers.image_url
+        customers.email
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
       WHERE
@@ -134,7 +134,7 @@ export async function fetchInvoicesPages(query: string) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch total number of invoices.");
   }
-} 
+}
 
 export async function fetchInvoiceById(id: string) {
   try {
@@ -169,15 +169,11 @@ export async function fetchFilteredReciepts(
   try {
     const reciepts = await sql<RecieptsTable>`
       SELECT
-        RecieptsTable.id,
+        reciepts.id,
         reciepts.total,
         reciepts.date,
-        reciepts.status,
         customers.name,
-        customers.email,
-        customers.image_url
-        customers.company
-        customers.address
+        customers.email
       FROM reciepts
       JOIN customers ON reciepts.customer_id = customers.id
       WHERE
@@ -216,6 +212,29 @@ export async function fetchRecieptsPages(query: string) {
   }
 }
 
+export async function fetchRecieptById(id: string) {
+  try {
+    const data = await sql<Reciept>`
+      SELECT
+        reciepts.id,
+        reciepts.customer_id,
+        reciepts.items,
+        reciepts.total
+      FROM reciepts
+      WHERE reciepts.id = ${id};
+    `;
+
+    const reciept = data.rows.map((reciept) => ({
+      ...reciept,
+      // Convert total from cents to dollars
+      total: reciept.total / 100,
+    }));
+    return reciept[0];
+  } catch (error) {
+    console.error("Database Error:", error);
+  }
+}
+
 export async function fetchProducts() {
   try {
     const data = await sql<Product>`
@@ -235,7 +254,6 @@ export async function fetchProducts() {
   }
 }
 
-
 export async function fetchFilteredProducts(
   query: string,
   currentPage: number
@@ -254,9 +272,8 @@ export async function fetchFilteredProducts(
   ORDER BY products.name ASC
   LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
 `;
-    
+
     return products.rows;
-    
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch products.");
@@ -273,7 +290,6 @@ export async function fetchProductsPages(query: string) {
 
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;
-    
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch total number of products.");
@@ -301,16 +317,12 @@ export async function fetchCustomers() {
 export async function fetchCustomerById(id: string) {
   try {
     const data = await sql<OneCustomer>`
-      SELECT
-        customers.name,
-        customers.company,
-        customers.address
-      FROM customers
+    SELECT * FROM customers
       WHERE customers.id = ${id};
     `;
 
-    const customer = data.rows[0]
-    return customer
+    const customer = data.rows[0];
+    return customer;
   } catch (error) {
     console.error("Database Error:", error);
   }
@@ -327,7 +339,6 @@ export async function fetchFilteredCustomers(
 		  customers.id,
 		  customers.name,
 		  customers.email,
-		  customers.image_url,
 		  COUNT(invoices.id) AS total_invoices,
 		  SUM(CASE WHEN invoices.status = 'pending' THEN invoices.total ELSE 0 END) AS total_pending,
 		  SUM(CASE WHEN invoices.status = 'paid' THEN invoices.total ELSE 0 END) AS total_paid
@@ -336,7 +347,7 @@ export async function fetchFilteredCustomers(
 		WHERE
 		  customers.name ILIKE ${`%${query}%`} OR
         customers.email ILIKE ${`%${query}%`}
-		GROUP BY customers.id, customers.name, customers.email, customers.image_url
+		GROUP BY customers.id, customers.name, customers.email
 		ORDER BY customers.name ASC
     LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
 	  `;

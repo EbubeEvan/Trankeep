@@ -17,7 +17,6 @@ export type Customer = {
   id: string;
   name: string;
   email: string;
-  image_url: string;
   company: string;
   address: string;
 };
@@ -31,7 +30,7 @@ export type Invoice = {
   status: 'pending' | 'paid';
 };
 
-export type reciept = {
+export type Reciept = {
   id: string;
   customer_id: string;
   items: InputSet[]
@@ -47,7 +46,6 @@ export type Revenue = {
 export type LatestInvoice = {
   id: string;
   name: string;
-  image_url: string;
   email: string;
   total: string;
 };
@@ -61,7 +59,6 @@ export type InvoicesTable = {
   customer_id: string;
   name: string;
   email: string;
-  image_url: string;
   date: string;
   total: number;
   status: 'pending' | 'paid';
@@ -72,18 +69,14 @@ export type RecieptsTable = {
   customer_id: string;
   name: string;
   email: string;
-  image_url: string;
   date: string;
   total: number;
-  company: string;
-  address: string
 };
 
 export type CustomersTable = {
   id: string;
   name: string;
   email: string;
-  image_url: string;
   total_invoices: number;
   total_pending: number;
   total_paid: number;
@@ -105,9 +98,11 @@ export type CustomerField = {
 };
 
 export type OneCustomer = {
-  name : string,
-  company : string;
-  address : string;
+  id: string;
+  name: string;
+  email: string;
+  company: string;
+  address: string;
 }
 
 export type InvoiceForm = {
@@ -131,6 +126,8 @@ export type CustomerState = {
   errors?: {
     name?: string[];
     email?: string[];
+    company?: string[];
+    address?: string[];
   };
   message?: string | null;
 };
@@ -162,3 +159,4 @@ export interface InputSet {
 
 export type NonNullableInvoice = NonNullable<Invoice>;
 export type NonNullableOneCustomer = NonNullable<OneCustomer>;
+export type NonNullableReciept = NonNullable<Reciept>

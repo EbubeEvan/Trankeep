@@ -1,15 +1,15 @@
-import { NonNullableInvoice, NonNullableOneCustomer, Product, User } from "@app/lib/definitions";
+import { NonNullableReciept, NonNullableOneCustomer, Product, User } from "@app/lib/definitions";
 import { formatCurrency } from "@app/lib/utils";
 import { forwardRef } from "react";
 
-const InvoiceHtml = forwardRef((
+const RecieptHtml = forwardRef((
   {
-    invoice,
+    reciept,
     customer,
     products,
     user,
   }: {
-    invoice: NonNullableInvoice;
+    reciept: NonNullableReciept;
     customer: NonNullableOneCustomer;
     products: Product[];
     user: User;
@@ -21,7 +21,7 @@ const InvoiceHtml = forwardRef((
     return oneProduct?.price!;
   };
 
-  const totalPrice = invoice?.items?.reduce((acc, item) => {
+  const totalPrice = reciept?.items?.reduce((acc, item) => {
     const priceAsNumber = Number(item.price);
     if (!isNaN(priceAsNumber)) {
       acc += priceAsNumber;
@@ -40,8 +40,8 @@ const InvoiceHtml = forwardRef((
             <p>{user.name}</p>
           </div>
           <div className="invoice-info">
-            <p className="info-title">Invoice</p>
-            <p>{invoice?.id}</p>
+            <p className="info-title">Reciept</p>
+            <p>{reciept?.id}</p>
           </div>
         </div>
         <div className="info-section">
@@ -70,7 +70,7 @@ const InvoiceHtml = forwardRef((
           </tr>
         </thead>
         <tbody>
-          {invoice?.items?.map((item, index) => (
+          {reciept?.items?.map((item, index) => (
             <tr key={index}>
               <td>{item.unit}</td>
               <td>{item.name}</td>
@@ -86,20 +86,13 @@ const InvoiceHtml = forwardRef((
       </div>
       <div className="terms-section">
         <div className="terms-info">
-          <p className="terms-label">Terms and Conditions</p>
-          <p>Payment due a month from receipt of this invoice</p>
-        </div>
-        <div className="payment-info">
-          <p className="payment-label">Payment Instructions</p>
-          <p>
-            Bank transfer to Jane Doe <br /> 28046102393 <br /> Gold Safe Bank Plc.
-          </p>
+          <p className="terms-label">PAID IN FULL</p>
         </div>
       </div>
     </main>
   );
 });
 
-InvoiceHtml.displayName = "InvoiceHtml";
+RecieptHtml.displayName = "RecieptHtml";
 
-export default InvoiceHtml;
+export default RecieptHtml;

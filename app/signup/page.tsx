@@ -1,7 +1,7 @@
 import AcmeLogo from '@app/ui/common/acme-logo';
-import SignInForm from '@app/ui/signin/siginIn-form';
+import SignUpForm from '@app/ui/signup/siginup-form';
  
- const SignInPage = () =>{
+ const SignUpPage = () =>{
   return (
     <main className="flex items-center justify-center md:h-screen">
       <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4">
@@ -10,10 +10,10 @@ import SignInForm from '@app/ui/signin/siginIn-form';
             <AcmeLogo />
           </div>
         </div>
-        <SignInForm />
+        <SignUpForm />
       </div>
     </main>
   );
 }
 
-export default SignInPage
+export default SignUpPage

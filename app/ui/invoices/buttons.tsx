@@ -1,7 +1,6 @@
 import { PencilIcon, PlusIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { deleteInvoice } from '@app/lib/actions';
-import { deleteProduct } from '@app/lib/actions';
+import { deleteInvoice , deleteProduct, deleteReciept, deleteCustomer} from '@app/lib/actions';
 
 export const CreateInvoice = () => {
   return (
@@ -50,6 +49,30 @@ export const DeleteInvoice = ({ id }: { id: string }) => {
   );
 }
 
+export const ViewReciept = ({ id }: { id: string }) => {
+  return (
+    <Link
+      href={`/dashboard/reciepts/${id}/view`}
+      className="rounded-md border p-2 hover:bg-gray-100"
+    >
+      <EyeIcon className="w-5" />
+    </Link>
+  );
+}
+
+export const DeleteReciept = ({ id }: { id: string }) => {
+  const deleteRecieptWithId = deleteReciept.bind(null, id);
+  
+  return (
+    <form action={deleteRecieptWithId}>
+      <button className="rounded-md border p-2 hover:bg-gray-100">
+        <span className="sr-only">Delete</span>
+        <TrashIcon className="w-5" />
+      </button>
+    </form>
+  );
+}
+
 export const DeleteProduct = ({ id }: { id: string }) => {
   const deleteProductWithId = deleteProduct.bind(null, id);
 
@@ -72,5 +95,29 @@ export const CreateCustomer = () => {
       <span className="hidden md:block">Add Customer</span>{' '}
       <PlusIcon className="h-5 md:ml-4" />
     </Link>
+  );
+}
+
+export const UpdateCustomer = ({ id }: { id: string }) => {
+  return (
+    <Link
+      href={`/dashboard/customers/${id}/edit`}
+      className="rounded-md border p-2 hover:bg-gray-100"
+    >
+      <PencilIcon className="w-5" />
+    </Link>
+  );
+}
+
+export const DeleteCustomer = ({ id }: { id: string }) => {
+  const deleteCustomerWithId = deleteCustomer.bind(null, id);
+
+  return (
+    <form action={deleteCustomerWithId}>
+      <button className="rounded-md border p-2 hover:bg-gray-100">
+        <span className="sr-only">Delete</span>
+        <TrashIcon className="w-5" />
+      </button>
+    </form>
   );
 }

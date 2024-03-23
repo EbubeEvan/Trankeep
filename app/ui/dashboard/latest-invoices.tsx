@@ -29,7 +29,7 @@ import { fetchLatestInvoices } from '@app/lib/data';
               >
                 <div className="flex items-center">
                   <Image
-                    src={invoice.image_url}
+                    src='/profile.png'
                     alt={`${invoice.name}'s profile picture`}
                     className="mr-4 rounded-full"
                     width={32}
