@@ -1,4 +1,4 @@
-import { GlobeAltIcon } from '@heroicons/react/24/outline';
+import Image from 'next/image';
 import { lusitana } from '@app/ui/common/fonts';
 
  const AcmeLogo = () => {
@@ -6,8 +6,8 @@ import { lusitana } from '@app/ui/common/fonts';
     <div
       className={`${lusitana.className} flex flex-row items-center leading-none text-white`}
     >
-      <GlobeAltIcon className="h-12 w-12 rotate-[15deg]" />
-      <p className="text-[44px]">Trankeep</p>
+      <Image src='/logo.svg' alt='logo' className="h-12 w-12" width={10} height={10} />
+      <p className="text-[44px] ml-3">Trankeep</p>
     </div>
   );
 }

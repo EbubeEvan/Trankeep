@@ -65,7 +65,7 @@ import Link from 'next/link';
         <LoginButton />
         <div className='mt-4 ml-2'>
           <p>Not registered?
-            <Link href='/signIn' className='ml-2 text-red-600'>
+            <Link href='/signup' className='ml-2 text-red-600'>
               Register
             </Link>
           </p>
