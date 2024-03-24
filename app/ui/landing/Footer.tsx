@@ -7,7 +7,7 @@ const Footer = () => {
     <footer className="pb-[2rem] md:pb-0 md:pl-[2rem]">
       <div className="flex flex-col gap-y-[2rem] md:flex-row justify-center">
         <div className="text-sm text-gray-600">
-          <div className="flex gap-2">
+          <div className="flex gap-2 ml-5">
             <Image
               src="/logo.svg"
               alt="logo"
