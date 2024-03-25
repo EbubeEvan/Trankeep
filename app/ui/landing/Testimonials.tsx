@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { stars } from "./data";
-import { testimonialImage1, testimonialImage2 } from "./data";
 
 const Testimonials = () => {
   return (

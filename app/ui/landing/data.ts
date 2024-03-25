@@ -4,47 +4,12 @@ import {
   ReceiptPercentIcon
 } from '@heroicons/react/24/outline';
 
-export const memojis = [
-  { image: "/images/image 21.png", bg: "bg-orange-400" },
-  { image: "/images/image 100.png", bg: "bg-purple-400" },
-  { image: "/images/image 8.png", bg: "bg-green-400" },
-  { image: "/images/image 72.png", bg: "bg-indigo-300" },
-  { image: "/images/image 108.png", bg: "bg-yellow-500" },
-  { image: "/images/image 103.png", bg: "bg-pink-300" },
-];
-
-export const memojiIcons = [
-  "/icons/microphone.svg",
-  "/icons/camera.svg",
-  "/icons/monitor.svg",
-  "/icons/face-smile.svg",
-  "/icons/message.svg",
-  "/icons/settings.svg",
-];
-
-export const avatarSet = [
-  "/avatars/Avatar.png",
-  "/avatars/Avatar (1).png",
-  "/avatars/Avatar (2).png",
-  "/avatars/Avatar (4).png",
-  "/avatars/Avatar (3).png",
-];
-
 export const stars = [
   "/landing/Star.svg",
   "/landing/Star.svg",
   "/landing/Star.svg",
   "/landing/Star.svg",
   "/landing/Star.svg",
-];
-
-export const logoSet = [
-  "/logos/Shopify.com svg.svg",
-  "/logos/Coinbase svg.svg",
-  "/logos/Dropbox svg.svg",
-  "/logos/Intercom svg.svg",
-  "/logos/Marvel svg.svg",
-  "/logos/Automattic svg.svg",
 ];
 
 export const featureSet = [
@@ -70,14 +35,6 @@ export const featureSet = [
   },
 ];
 
-export const testimonialImage1 = ["/images/black boy.png", "/images/Image (1).png"];
-
-export const testimonialImage2 = [
-  "/images/Image (2).png",
-  "/images/Image (3).png",
-  "/images/Image (4).png",
-];
-
 export const FAQs = [
   {
     question: "Can I use Trankeep on multiple devices?",
@@ -99,25 +56,6 @@ export const FAQs = [
   {
     question: "What kind of customer support does Trankeep provide?",
     icon: "/landing/plus-circle.svg",
-  },
-];
-
-export const subscribe = [
-  {
-    title: "30 days free trial",
-    icon: "/icons/check-circle.svg",
-  },
-  {
-    title: "Cancel at any time",
-    icon: "/icons/check-circle.svg",
-  },
-  {
-    title: "Access to all features",
-    icon: "/icons/check-circle.svg",
-  },
-  {
-    title: "Peronalized onboarding",
-    icon: "/icons/check-circle.svg",
   },
 ];
 
