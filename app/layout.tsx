@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     template: "%s | Trankeep",
     default: "Trankeep",
   },
-  description: "Book Keeping app.",
+  description: "Business Management Platform.",
   metadataBase: new URL("https://trankeep.vercel.app/"),
 };
 
