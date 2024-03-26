@@ -326,6 +326,11 @@ export const UpdateCustomer = async (
 export const deleteCustomer = async (id: string) => {
   try {
     await sql`DELETE FROM customers WHERE id = ${id}`;
+
+    await sql`DELETE FROM invoices WHERE customer_id = ${id}`;
+
+    await sql`DELETE FROM reciepts WHERE customer_id = ${id}`;
+
     revalidatePath("/dashboard/customers");
     console.log("Deleted customer");
   } catch (error) {
