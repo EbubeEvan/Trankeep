@@ -60,7 +60,7 @@ const ViewForm = ({
         {/* <button className="bg-blue-500 text-white p-3 rounded-md">
             Send as Email
           </button> */}
-        <RecieptButton />
+        { invoice.status === 'pending' ? (<p className="text-red-500 my-5">Reciept button hidden. Invoice still pending</p>) : <RecieptButton/>}
       </form>
     </>
   );
