@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: 'Reciepts',
 };
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
  const Page = async ({
   searchParams,

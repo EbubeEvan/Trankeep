@@ -8,7 +8,7 @@ import { Suspense } from "react";
 import { InvoicesTableSkeleton } from "@app/ui/common/skeletons";
 import { Metadata } from 'next';
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: 'Products',
