@@ -3,7 +3,7 @@ import Image from "next/image"
 
 const FAQ = () => {
   return (
-    <section className='pt-[5rem] md:pt-[7rem] pb-[5rem] md:pl-[2rem]'>
+    <section className='pt-[5rem] md:pt-[7rem] pb-[5rem] md:pl-[2rem] mt-[3rem]'>
       <div className="flex flex-col md:flex-row gap-y-[1rem] gap-x-[10rem]">
         <div>
           <p className='text-sm text-blue-700 font-bold'>Support</p>
