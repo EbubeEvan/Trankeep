@@ -59,30 +59,10 @@ export const FAQs = [
   },
 ];
 
-export const footerhead = ["Product", "Company", "Resources", "Legal"];
-
-export const footerLinks = [
-  "Overview",
-  "About us",
-  "Blog",
-  "Terms",
-  "Features",
-  "Careers",
-  "Events",
-  "Privacy",
-  "Solutions",
-  "Press",
-  "Help centre",
-  "Cookies",
-  "Tutorials",
-  "News",
-  "Tutorials",
-  "Licenses",
-  "Pricing",
-  "Contact",
-  "Support",
-  "Contact",
-];
+export const footer1 = ["Product", "Overview", "Features", "Solutions", "Tutorials", "Pricing"]
+export const footer2 = ["Company", "About us", "Careers", "Press", "News", "Contact"]
+export const footer3 = ["Resources", "Blog", "Events", "Help centre", "Tutorials", "Support"]
+export const footer4 = ["Legal", "Terms", "Privacy", "Cookies", "Licenses", "Contact"]
 
 export const socialIcons = [
   "/landing/linkedin.svg",

@@ -12,6 +12,7 @@ import InvoiceHtml from "@app/ui/invoices/invoicehtml";
 import "@/app/ui/invoices/invoice.css";
 import { addReciept } from "@app/lib/actions";
 import { useFormStatus } from "react-dom";
+import Link from "next/link";
 
 const ViewForm = ({
   invoice,
@@ -60,13 +61,22 @@ const ViewForm = ({
         {/* <button className="bg-blue-500 text-white p-3 rounded-md">
             Send as Email
           </button> */}
-        { invoice.status === 'pending' ? (<p className="text-red-500 my-5">Reciept button hidden. Invoice still pending</p>) : <RecieptButton/>}
+        {invoice.status === "pending" ? (
+          <Link href={`/dashboard/invoices/${invoice.id}/edit`}>
+            <button className="bg-blue-500 text-white p-3 rounded-md">
+              Invoice still pending <br /> Edit invoice
+            </button>
+          </Link>
+        ) : (
+          <RecieptButton />
+        )}
       </form>
     </>
   );
 };
 
 import React from "react";
+import { link } from "fs";
 
 const RecieptButton = () => {
   const { pending } = useFormStatus();
