@@ -33,7 +33,8 @@ const ViewForm = ({
   const addRecieptWithInvoice = addReciept.bind(null, invoice);
 
   return (
-    <div className="">
+    <div>
+
       <div ref={pdfRef}>
         <InvoiceHtml
           invoice={invoice as NonNullableInvoice}
