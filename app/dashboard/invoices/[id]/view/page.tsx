@@ -15,9 +15,8 @@ import { getUser } from "@app/lib/data";
 const page = async ({ params }: { params: { id: string } }) => {
   const id = params.id;
   
-  const [invoice, products, session] = await Promise.all([
+  const [invoice, session] = await Promise.all([
     fetchInvoiceById(id),
-    fetchProducts(),
     auth()
   ]);
 
@@ -31,7 +30,6 @@ const page = async ({ params }: { params: { id: string } }) => {
       <ViewForm
         invoice={invoice as NonNullableInvoice}
         customer={customer as NonNullableOneCustomer}
-        products={products as Product[]}
         user={user}
       />
     </main>

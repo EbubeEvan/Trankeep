@@ -38,51 +38,36 @@ export const featureSet = [
 export const FAQs = [
   {
     question: "Can I use Trankeep on multiple devices?",
+    answer : 'Yes you can',
     icon: "/landing/plus-circle.svg",
   },
   {
     question:
       "Does Trankeep require accounting knowledge to use?",
+      answer : 'No it does not',
     icon: "/landing/plus-circle.svg",
   },
   {
     question: "How does Trankeep ensure the security of my transaction records?",
+    answer: "Records are securely stored in our servers",
     icon: "/landing/plus-circle.svg",
   },
   {
     question: "Do I need to download any software to use Trankeep?",
+    answer: "No you don't",
     icon: "/landing/plus-circle.svg",
   },
   {
     question: "What kind of customer support does Trankeep provide?",
+    answer: "Customer support can be reached via email",
     icon: "/landing/plus-circle.svg",
   },
 ];
 
-export const footerhead = ["Product", "Company", "Resources", "Legal"];
-
-export const footerLinks = [
-  "Overview",
-  "About us",
-  "Blog",
-  "Terms",
-  "Features",
-  "Careers",
-  "Events",
-  "Privacy",
-  "Solutions",
-  "Press",
-  "Help centre",
-  "Cookies",
-  "Tutorials",
-  "News",
-  "Tutorials",
-  "Licenses",
-  "Pricing",
-  "Contact",
-  "Support",
-  "Contact",
-];
+export const footer1 = ["Product", "Overview", "Features", "Solutions", "Tutorials", "Pricing"]
+export const footer2 = ["Company", "About us", "Careers", "Press", "News", "Contact"]
+export const footer3 = ["Resources", "Blog", "Events", "Help centre", "Tutorials", "Support"]
+export const footer4 = ["Legal", "Terms", "Privacy", "Cookies", "Licenses", "Contact"]
 
 export const socialIcons = [
   "/landing/linkedin.svg",

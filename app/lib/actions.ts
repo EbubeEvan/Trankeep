@@ -8,15 +8,16 @@ import {
   InputSet,
   Invoice,
 } from "./definitions";
-import { z } from "zod";
+import z from "zod";
 import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
-import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from "uuid";
+import bcrypt from 'bcrypt'
+import {v4} from 'uuid'
 import fs from "fs";
 import path from "path";
+import { AuthError } from "next-auth";
 
 const inputSetSchema = z.object({
   name: z.string({
@@ -218,7 +219,7 @@ export const addReciept = async (invoice: Invoice) => {
   const totalIncents = total * 100
 
   try {
-    const version_id = uuidv4(); // to keep each reciept unique upon regenration so it can enter the table
+    const version_id = v4(); // to keep each reciept unique upon regenration so it can enter the table
     await sql`
       INSERT INTO reciepts (customer_id, date, items, total, version_id)
       VALUES (${customer_id}, ${date}, ${jsonItems}, ${totalIncents}, ${version_id})`;
@@ -269,7 +270,7 @@ export const addCustomer = async (
   const { name, email, company, address } = validatedFields.data;
 
   try {
-    const id = uuidv4();
+    const id = v4();
     await sql`
       INSERT INTO customers (id, name, email, company, address)
       VALUES (${id}, ${name}, ${email}, ${company}, ${address} )`;
@@ -366,7 +367,7 @@ export const addProduct = async (
   const priceInCents = price * 100;
 
   try {
-    const id = uuidv4();
+    const id = v4();
     await sql`
       INSERT INTO products (id, name, price)
       VALUES (${id}, ${name}, ${priceInCents})`;
@@ -422,7 +423,7 @@ export const register = async (
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const userId = uuidv4(); // Generate UUID for the user ID
+    const userId = v4(); // Generate UUID for the user ID
     await sql`
       INSERT INTO users (id, name, email, password, company, address)
       VALUES (${userId}, ${name}, ${email}, ${hashedPassword}, ${company}, ${address})`;
@@ -437,17 +438,21 @@ export const register = async (
 };
 
 //sign in
-export const authenticate = async (
+export async function authenticate(
   prevState: string | undefined,
-  formData: FormData
-) => {
+  formData: FormData,
+) {
   try {
-    await signIn("credentials", Object.fromEntries(formData.entries()));
+    await signIn('credentials', formData);
   } catch (error) {
-    console.log(error);
-    if ((error as Error).message.includes("CredentialsSignin")) {
-      return "CredentialsSignin";
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
     }
     throw error;
   }
-};
+}

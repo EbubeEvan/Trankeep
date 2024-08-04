@@ -1,4 +1,4 @@
-import { NonNullableInvoice, NonNullableOneCustomer, Product, User } from "@app/lib/definitions";
+import { NonNullableInvoice, NonNullableOneCustomer, User } from "@app/lib/definitions";
 import { formatCurrency } from "@app/lib/utils";
 import { forwardRef } from "react";
 
@@ -6,19 +6,17 @@ const InvoiceHtml = forwardRef((
   {
     invoice,
     customer,
-    products,
     user,
   }: {
     invoice: NonNullableInvoice;
     customer: NonNullableOneCustomer;
-    products: Product[];
     user: User;
   },
   ref: any
 ) => {
-  const unitPrice = (name: string): number => {
-    const oneProduct = products.find((product) => product.name === name);
-    return oneProduct?.price!;
+  const unitPrice = (total: string, amount : string): number => {
+    const unit = Number(total) / Number(amount)
+    return unit
   };
 
   const totalPrice = invoice?.items?.reduce((acc, item) => {
@@ -30,7 +28,7 @@ const InvoiceHtml = forwardRef((
   }, 0);
 
   return (
-    <main className="invoice-container" ref={ref}>
+    <main className="invoice-container md:pt-14" ref={ref}>
       <div>
         <h1 className="company-name">{user.company}</h1>
         <p className="company-address">{user.address}</p>
@@ -74,7 +72,7 @@ const InvoiceHtml = forwardRef((
             <tr key={index}>
               <td>{item.unit}</td>
               <td>{item.name}</td>
-              <td>{formatCurrency(Number(unitPrice(item.name)))}</td>
+              <td>{formatCurrency(unitPrice(item.price, item.unit))}</td>
               <td>{formatCurrency(Number(item.price))}</td>
             </tr>
           ))}
@@ -84,7 +82,7 @@ const InvoiceHtml = forwardRef((
         <p className="total-label">Total</p>
         <p className="total-amount">{formatCurrency(Number(totalPrice))}</p>
       </div>
-      <div className="terms-section">
+      <div className="terms-section gap-10">
         <div className="terms-info">
           <p className="terms-label">Terms and Conditions</p>
           <p>Payment due a month from receipt of this invoice</p>

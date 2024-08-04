@@ -4,8 +4,8 @@ import { stars } from "./data";
 const Testimonials = () => {
   return (
     <section className="p-[2rem] mt-[4rem]">
-      <div className="flex flex-col md:flex-row gap-y-[8rem] max-[280px]:gap-y-[7rem] gap-x-[6rem]">
-        <div className="md:pr-[4rem]">
+      <div className="flex flex-col md:flex-row gap-y-[8rem] max-[280px]:gap-y-[7rem] gap-x-[10%]">
+        <div className="md:pr-[4rem] w-full md:w-[45%]">
           <div className="flex mb-[2rem]">
             {stars.map((star, index) => (
               <Image
@@ -49,7 +49,7 @@ const Testimonials = () => {
             </div>
           </div>
         </div>
-        <div className="max-w-[20rem]">
+        <div className="mt-10 w-full md:w-[45%]">
           <Image src='/landing/businesswoman.png' alt="businesswoman" width={500} height={500}/>
         </div>
       </div>
