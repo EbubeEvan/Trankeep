@@ -13,6 +13,7 @@ import "@/app/ui/invoices/invoice.css";
 import { addReciept } from "@app/lib/actions";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
+import Link from "next/link";
 
 const ViewForm = ({
   invoice,
