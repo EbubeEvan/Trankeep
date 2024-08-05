@@ -422,7 +422,7 @@ export const register = async (
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const userId = v4(); // Generate UUID for the user ID
+    const userId = v4();
     await sql`
       INSERT INTO users (id, name, email, password, company, address)
       VALUES (${userId}, ${name}, ${email}, ${hashedPassword}, ${company}, ${address})`;
