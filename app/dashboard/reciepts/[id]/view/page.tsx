@@ -1,13 +1,11 @@
 import ViewReciept from "@app/ui/reciepts/view-reciept";
 import {
-  fetchProducts,
   fetchCustomerById,
   fetchRecieptById,
 } from "@app/lib/data";
 import {
   NonNullableReciept,
   NonNullableOneCustomer,
-  Product,
 } from "@app/lib/definitions";
 import { auth } from "@auth";
 import { getUser } from "@app/lib/data";
@@ -15,9 +13,8 @@ import { getUser } from "@app/lib/data";
 const page = async ({ params }: { params: { id: string } }) => {
   const id = params.id;
   
-  const [reciept, products, session] = await Promise.all([
+  const [reciept, session] = await Promise.all([
     fetchRecieptById(id),
-    fetchProducts(),
     auth()
   ]);
 
@@ -31,7 +28,6 @@ const page = async ({ params }: { params: { id: string } }) => {
       <ViewReciept
         reciept={reciept as NonNullableReciept}
         customer={customer as NonNullableOneCustomer}
-        products={products as Product[]}
         user={user}
       />
     </main>

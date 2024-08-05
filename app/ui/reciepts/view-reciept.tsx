@@ -14,12 +14,11 @@ import "@/app/ui/invoices/invoice.css";
 const ViewReciept = ({
   reciept,
   customer,
-  products,
   user,
 }: {
     reciept: NonNullableReciept;
   customer: NonNullableOneCustomer;
-  products: Product[];
+
   user: User;
 }) => {
   const pdfRef = useRef<any>();
@@ -30,12 +29,11 @@ const ViewReciept = ({
   });
 
   return (
-    <>
+    <div className="lg:pb-8">
       <div ref={pdfRef}>
         <RecieptHtml
           reciept={reciept as NonNullableReciept}
           customer={customer as NonNullableOneCustomer}
-          products={products as Product[]}
           user={user as User}
           ref={pdfRef}
         />
@@ -54,7 +52,7 @@ const ViewReciept = ({
           Download reciept
         </button>
       </form>
-    </>
+    </div>
   );
 };
 

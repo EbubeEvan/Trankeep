@@ -1,4 +1,4 @@
-import { NonNullableReciept, NonNullableOneCustomer, Product, User } from "@app/lib/definitions";
+import { NonNullableReciept, NonNullableOneCustomer, User } from "@app/lib/definitions";
 import { formatCurrency } from "@app/lib/utils";
 import { forwardRef } from "react";
 
@@ -6,19 +6,17 @@ const RecieptHtml = forwardRef((
   {
     reciept,
     customer,
-    products,
     user,
   }: {
     reciept: NonNullableReciept;
     customer: NonNullableOneCustomer;
-    products: Product[];
     user: User;
   },
   ref: any
 ) => {
-  const unitPrice = (name: string): number => {
-    const oneProduct = products.find((product) => product.name === name);
-    return oneProduct?.price!;
+  const unitPrice = (total: string, amount : string): number => {
+    const unit = Number(total) / Number(amount)
+    return unit
   };
 
   const totalPrice = reciept?.items?.reduce((acc, item) => {
@@ -34,7 +32,7 @@ const RecieptHtml = forwardRef((
       <div>
         <h1 className="company-name">{user.company}</h1>
         <p className="company-address">{user.address}</p>
-        <div className="info-section">
+        <div className="info-section gap-5">
           <div className="from-info">
             <p className="info-title">From</p>
             <p>{user.name}</p>
@@ -72,9 +70,9 @@ const RecieptHtml = forwardRef((
         <tbody>
           {reciept?.items?.map((item, index) => (
             <tr key={index}>
-              <td>{item.unit}</td>
-              <td>{item.name}</td>
-              <td>{formatCurrency(Number(unitPrice(item.name)))}</td>
+              <td>{item?.unit}</td>
+              <td>{item?.name}</td>
+              <td>{formatCurrency(unitPrice(item?.price, item?.unit))}</td>
               <td>{formatCurrency(Number(item.price))}</td>
             </tr>
           ))}
