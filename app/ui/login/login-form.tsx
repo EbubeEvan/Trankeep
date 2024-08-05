@@ -77,10 +77,10 @@ import Link from 'next/link';
           aria-live="polite"
           aria-atomic="true"
         >
-          {state === 'CredentialsSignin' && (
+          {state && (
             <>
               <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-              <p className="text-sm text-red-500">Invalid credentials</p>
+              <p className="text-sm text-red-500">{state}</p>
             </>
           )}
         </div>
