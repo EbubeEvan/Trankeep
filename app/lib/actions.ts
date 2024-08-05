@@ -179,7 +179,6 @@ export const updateInvoice = async (
   // Convert the array of objects to a JSON string
   const jsonItems = JSON.stringify(items);
 
-  // Insert data into the database
   try {
     await sql`
       UPDATE invoices
