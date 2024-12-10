@@ -4,10 +4,13 @@ import CardWrapper from '@app/ui/dashboard/cards';
 import { lusitana } from '@app/ui/common/fonts';
 import { Suspense } from 'react';
 import { RevenueChartSkeleton, LatestInvoicesSkeleton, CardsSkeleton } from '@app/ui/common/skeletons';
+import { fetchRevenue } from '@app/lib/data';
 
 export const dynamic = "force-dynamic";
 
 const page = async () => {
+  const revenue = await fetchRevenue();
+
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
@@ -18,9 +21,9 @@ const page = async () => {
           <CardWrapper/>
         </Suspense>
       </div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
+      <div className="mt-6 flex gap-5">
       <Suspense fallback={<RevenueChartSkeleton />}>
-          <RevenueChart />
+          <RevenueChart revenue={revenue}/>
         </Suspense>
         <Suspense fallback={<LatestInvoicesSkeleton/>}>
           <LatestInvoices />
