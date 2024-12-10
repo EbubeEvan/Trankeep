@@ -85,7 +85,7 @@ import Link from 'next/link';
           )}
         </div>
         </div>
-      </div>
+      </div> 
     </form>
   );
 }

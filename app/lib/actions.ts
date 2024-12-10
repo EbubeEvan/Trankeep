@@ -13,10 +13,8 @@ import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
-import bcrypt from 'bcrypt'
-import {v4} from 'uuid'
-import fs from "fs";
-import path from "path";
+import bcrypt from "bcrypt";
+import { v4 } from "uuid";
 import { AuthError } from "next-auth";
 
 const inputSetSchema = z.object({
@@ -215,14 +213,14 @@ export const addReciept = async (invoice: Invoice) => {
 
   const jsonItems = JSON.stringify(items);
 
-  const totalIncents = total * 100
+  const totalIncents = total * 100;
 
   try {
     const version_id = v4(); // to keep each reciept unique upon regenration so it can enter the table
     await sql`
       INSERT INTO reciepts (customer_id, date, items, total, version_id)
       VALUES (${customer_id}, ${date}, ${jsonItems}, ${totalIncents}, ${version_id})`;
-      console.log('reciept added');
+    console.log("reciept added");
   } catch (error) {
     console.log(error);
     return {
@@ -238,7 +236,7 @@ export const deleteReciept = async (id: string) => {
   try {
     await sql`DELETE FROM reciepts WHERE id = ${id}`;
     revalidatePath("/dashboard/reciepts");
-    console.log('reciept deleted');
+    console.log("reciept deleted");
   } catch (error) {
     console.log(error);
     return { message: "Database Error: Failed to Delete reciept." };
@@ -285,7 +283,7 @@ export const addCustomer = async (
 
 //Update Customer
 export const UpdateCustomer = async (
-  id : string,
+  id: string,
   prevState: CustomerState,
   formData: FormData
 ) => {
@@ -325,19 +323,41 @@ export const UpdateCustomer = async (
 // Delete Customer
 export const deleteCustomer = async (id: string) => {
   try {
+    // Check if the customer has associated invoices or reciepts
+    const [invoicesResult, recieptsResult] = await Promise.all([
+      sql`SELECT id FROM invoices WHERE customer_id = ${id}`,
+      sql`SELECT id FROM reciepts WHERE customer_id = ${id}`,
+    ]);
+
+    console.log(invoicesResult);
+    console.log(recieptsResult);
+
+    // Check if invoices or reciepts exist
+    const hasInvoices = invoicesResult.rows.length > 0;
+    const hasreciepts = recieptsResult.rows.length > 0;
+
+    // Delete associated invoices and reciepts if they exist
+    if (hasInvoices) {
+      await sql`DELETE FROM invoices WHERE customer_id = ${id}`;
+    }
+
+    if (hasreciepts) {
+      await sql`DELETE FROM reciepts WHERE customer_id = ${id}`;
+    }
+
+    // Delete the customer regardless of associated records
     await sql`DELETE FROM customers WHERE id = ${id}`;
 
-    await sql`DELETE FROM invoices WHERE customer_id = ${id}`;
-
-    await sql`DELETE FROM reciepts WHERE customer_id = ${id}`;
-
+    // Revalidate the path to refresh data on the frontend
     revalidatePath("/dashboard/customers");
-    console.log("Deleted customer");
+    revalidatePath("/dashboard/invoices");
+    revalidatePath("/dashboard/reciepts");
+    console.log("Deleted customer and associated records (if any).");
   } catch (error) {
-    console.log(error);
-    return { message: "Database Error: Failed to Delete Customer." };
+    console.error("Error deleting customer:", error);
   }
 };
+
 
 // Add Product
 export const addProduct = async (
@@ -439,17 +459,17 @@ export const register = async (
 //sign in
 export async function authenticate(
   prevState: string | undefined,
-  formData: FormData,
+  formData: FormData
 ) {
   try {
-    await signIn('credentials', formData);
+    await signIn("credentials", formData);
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Invalid credentials.';
+        case "CredentialsSignin":
+          return "Invalid credentials.";
         default:
-          return 'Something went wrong.';
+          return "Something went wrong.";
       }
     }
     throw error;
